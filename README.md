@@ -6,7 +6,7 @@ It covers login and logout, access control (Back after logout, protected URLs), 
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of a full run with every group (`mvn clean test -Pdemo`): 36 tests, 32 passed, plus 2 failed and 2 skipped on purpose by the demo tests, grouped by class with groups and durations.*
+*Report of a full run with every group (`mvn clean test -Pdemo`): 37 tests, 33 passed, plus 2 failed and 2 skipped on purpose by the demo tests, grouped by class with groups and durations.*
 
 ## Tech stack
 
@@ -23,7 +23,7 @@ It covers login and logout, access control (Back after logout, protected URLs), 
 ```
 selenium-java-framework
 ├── docs/images/                      Report screenshots used in this README (overview, failures)
-├── docs/interview-questions.pdf       Selenium + TestNG interview questions with answers
+├── docs/interview-questions.pdf       104 Selenium + TestNG interview questions: explanation, example, link to this code
 ├── pom.xml
 ├── testng.xml                         Suite for running from the IDE
 └── src
@@ -63,17 +63,17 @@ selenium-java-framework
 | `SystemUsersTest` | `admin` | System Users opens from the menu (`smoke`) · filter by username · filter by role and status · unknown username finds no records · Reset clears every filter |
 | `EmployeeTest` | `pim` | An employee can be added, found by ID and deleted (`smoke`) · first and last name are required · unknown employee ID finds no records |
 | `SeleniumScenariosTest` | `interview` | Read a list of elements · find broken links · read a custom drop-down's options · log in with keyboard actions · open a second tab and switch windows · run JavaScript · take an element screenshot |
-| `TestNgFeaturesTest` | `interview` | `SoftAssert` · `expectedExceptions` · `priority` + `dependsOnMethods` · `invocationCount` (runs twice) · `retryAnalyzer` · `@Parameters` with `@Optional` |
+| `TestNgFeaturesTest` | `interview` | `SoftAssert` · `expectedExceptions` · `priority` + `dependsOnMethods` · `invocationCount` (runs twice) · `timeOut` · `retryAnalyzer` · `@Parameters` with `@Optional` |
 | `ReportDemoTest` | `demo` | Fail and skip **on purpose** (see below) |
 
-A normal run has 32 tests: 17 core tests and 15 interview tests (data providers and `invocationCount` add runs). It takes about 3 minutes on 3 threads.
+A normal run has 33 tests: 17 core tests and 16 interview tests (data providers and `invocationCount` add runs). It takes about 3 to 4 minutes on 3 threads.
 
 Latest results (5 Oct 2026, headless Chrome, JDK 27, 3 threads):
 
 | Command | Tests | Passed | Failed | Skipped | Time |
 |---|---|---|---|---|---|
-| `mvn clean test -Dheadless=true` | 32 | 32 | 0 | 0 | about 2 min 50 s |
-| `mvn clean test -Pdemo -Dheadless=true` | 36 | 32 | 2 (on purpose) | 2 (on purpose) | 3 min 08 s |
+| `mvn clean test -Dheadless=true` | 33 | 33 | 0 | 0 | 3 min 45 s |
+| `mvn clean test -Pdemo -Dheadless=true` | 37 | 33 | 2 (on purpose) | 2 (on purpose) | 2 min 32 s |
 
 ### Demo tests: failed and skipped results
 
@@ -133,7 +133,7 @@ The HTML report shows the verdict, pass rate, the environment (application, brow
 
 ## Interview questions
 
-[`docs/interview-questions.pdf`](docs/interview-questions.pdf) has Selenium and TestNG interview questions with model answers. Many answers point to this framework, and the coding scenarios are real, commented tests:
+[`docs/interview-questions.pdf`](docs/interview-questions.pdf) has 104 Selenium and TestNG interview questions. Every answer has an explanation, an example, and an **In the framework** link to the exact file of this repository where it is done (or why it is not used). A References section at the end maps every file to its questions and links the official Selenium, TestNG and Surefire documentation. The coding scenarios are real, commented tests:
 
 - `SeleniumScenariosTest`: each test is one classic Selenium task (broken links, windows, drop-downs, `Actions`, `JavascriptExecutor`, element screenshots), with the technique explained in its Javadoc.
 - `TestNgFeaturesTest`: each test uses one TestNG feature on a real check, with what it does and when to use it.

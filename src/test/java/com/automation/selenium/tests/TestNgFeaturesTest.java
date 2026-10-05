@@ -17,13 +17,9 @@ import com.automation.selenium.utils.Steps;
 /**
  * TestNG features that interviews ask about, each used on a real OrangeHRM
  * check: soft assertions, expected exceptions, priority with
- * dependsOnMethods, invocationCount, a retry analyzer and suite parameters.
- * Data providers and groups are shown in LoginTest; a skip and a failed
- * dependency in ReportDemoTest.
- * <p>
- * Not shown on purpose: {@code timeOut}. TestNG runs a test with a timeOut
- * on a separate thread, which has no browser in DriverManager's ThreadLocal,
- * so it does not suit thread-bound WebDriver tests.
+ * dependsOnMethods, invocationCount, timeOut, a retry analyzer and suite
+ * parameters. Data providers and groups are shown in LoginTest; a skip and a
+ * failed dependency in ReportDemoTest.
  */
 @Test(groups = "interview")
 public class TestNgFeaturesTest extends BaseTest {
@@ -90,6 +86,17 @@ public class TestNgFeaturesTest extends BaseTest {
 		LoginPage login = openLoginPage().submit(Config.get().username(), "wrong-password");
 
 		assertEquals(login.errorMessage(), "Invalid credentials", "Error banner");
+	}
+
+	/**
+	 * timeOut: fails the test if it runs longer than 60 seconds. It is a safety
+	 * net against a page that hangs; the explicit waits still give the precise
+	 * error for anything slower than expected. The timed test still sees the
+	 * browser that BaseTest started for this thread.
+	 */
+	@Test(timeOut = 60_000, description = "TestNG: timeOut, the login must finish within 60 seconds")
+	public void loginFinishesWithinOneMinute() {
+		assertTrue(loginAsAdmin().isDisplayed(), "The dashboard should be shown");
 	}
 
 	/**
