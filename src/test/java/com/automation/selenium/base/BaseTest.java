@@ -10,6 +10,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -22,7 +23,8 @@ import com.automation.selenium.report.HtmlReportListener;
 /**
  * Parent of all test classes. Every test method gets a fresh browser, and a
  * failed test gets a screenshot, which is saved to {@code target/screenshots}
- * and embedded in the HTML report.
+ * and embedded in the HTML report. A test class can override
+ * {@link #cleanUp()} to remove data it created, with the browser still open.
  */
 public abstract class BaseTest {
 
@@ -38,7 +40,9 @@ public abstract class BaseTest {
 	}
 
 	/**
-	 * Takes a screenshot if the test failed, then closes the browser.
+	 * Takes a screenshot if the test failed, runs {@link #cleanUp()}, then
+	 * closes the browser. The screenshot comes first, so it shows the page at
+	 * the moment of failure, not after the cleanup.
 	 *
 	 * @param result the result of the test that just ran.
 	 */
@@ -48,9 +52,20 @@ public abstract class BaseTest {
 			if (result.getStatus() == ITestResult.FAILURE && DriverManager.isStarted()) {
 				attachScreenshot(result);
 			}
+			if (DriverManager.isStarted()) {
+				runCleanUp(result);
+			}
 		} finally {
 			DriverManager.quit();
 		}
+	}
+
+	/**
+	 * Removes test data the test created, while its browser is still open.
+	 * Runs after every test, passed or failed; does nothing unless a test
+	 * class overrides it.
+	 */
+	protected void cleanUp() {
 	}
 
 	/**
@@ -74,6 +89,22 @@ public abstract class BaseTest {
 	 */
 	protected DashboardPage loginAsAdmin() {
 		return openLoginPage().loginAsAdmin();
+	}
+
+	/**
+	 * Runs {@link #cleanUp()}. A failing cleanup is only logged, so it never
+	 * hides the test's own result.
+	 *
+	 * @param result the test that just ran.
+	 */
+	private void runCleanUp(ITestResult result) {
+		// Steps logged during cleanup belong to the test, not to this @AfterMethod
+		Reporter.setCurrentTestResult(result);
+		try {
+			cleanUp();
+		} catch (RuntimeException e) {
+			System.err.println("Cleanup after " + result.getName() + " failed: " + e.getMessage());
+		}
 	}
 
 	/**

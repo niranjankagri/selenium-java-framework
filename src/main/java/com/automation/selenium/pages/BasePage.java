@@ -26,6 +26,9 @@ import com.automation.selenium.config.Config;
  */
 public abstract class BasePage {
 
+	// Every OrangeHRM page lives under this path; page PATHs are relative to it
+	protected static final String APP_PATH = "/web/index.php";
+
 	// Spinner OrangeHRM shows while a form or table is loading
 	private static final By LOADER = By.cssSelector(".oxd-loading-spinner, .oxd-form-loader");
 	// How long to wait for the spinner to show up; fast responses may never show it
@@ -36,9 +39,11 @@ public abstract class BasePage {
 	private static final By TABLE_HEADERS = By.cssSelector(".oxd-table-header .oxd-table-th");
 	private static final By TABLE_ROWS = By.cssSelector(".oxd-table-body .oxd-table-card");
 	private static final By TABLE_CELLS = By.cssSelector(".oxd-table-cell");
-	// "(3) Records Found" / "No Records Found" above a results table
 	// Options of an opened drop-down list
 	private static final By DROPDOWN_OPTIONS = By.cssSelector("div[role='listbox'] div[role='option']");
+	// Validation messages under form fields, e.g. "Required"
+	private static final By FIELD_ERRORS = By.cssSelector(".oxd-input-field-error-message");
+	// "(3) Records Found" / "No Records Found" above a results table
 	private static final By RECORDS_FOUND = By.xpath("//span[contains(normalize-space(),'Record Found') or contains(normalize-space(),'Records Found')]");
 
 	// The browser this page works on
@@ -55,6 +60,15 @@ public abstract class BasePage {
 		// OrangeHRM re-renders parts of the page after each load; an element that is
 		// replaced while we wait is simply looked up again on the next poll
 		this.wait.ignoring(StaleElementReferenceException.class);
+	}
+
+	/**
+	 * Loads an OrangeHRM page by its path, without waiting for its content.
+	 *
+	 * @param path the page path after {@value #APP_PATH}, e.g. "/auth/login".
+	 */
+	protected void openPath(String path) {
+		driver.get(Config.get().baseUrl() + APP_PATH + path);
 	}
 
 	/**
@@ -171,6 +185,22 @@ public abstract class BasePage {
 	}
 
 	/**
+	 * @param label  the visible field label.
+	 * @return By    locator of the clickable box of that drop-down.
+	 */
+	private By selectField(String label) {
+		return inField(label, "//div[contains(@class,'oxd-select-text')]");
+	}
+
+	/**
+	 * @param text  the button's visible text, e.g. "Search".
+	 * @return By   locator of that button.
+	 */
+	protected By button(String text) {
+		return By.xpath("//button[normalize-space()='" + text + "']");
+	}
+
+	/**
 	 * Picks an option in one of OrangeHRM's drop-downs (they are not
 	 * {@code <select>} elements, so Selenium's {@code Select} cannot be used).
 	 *
@@ -178,7 +208,7 @@ public abstract class BasePage {
 	 * @param option  the option text, e.g. "Admin".
 	 */
 	protected void choose(String label, String option) {
-		click(inField(label, "//div[contains(@class,'oxd-select-text')]"));
+		click(selectField(label));
 		click(By.xpath("//div[@role='listbox']//div[@role='option'][normalize-space()='" + option + "']"));
 	}
 
@@ -190,7 +220,7 @@ public abstract class BasePage {
 	 * @return List  the option texts in display order, including "-- Select --".
 	 */
 	protected List<String> options(String label) {
-		By field = inField(label, "//div[contains(@class,'oxd-select-text')]");
+		By field = selectField(label);
 		click(field);
 		List<String> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(DROPDOWN_OPTIONS))
 				.stream().map(WebElement::getText).map(String::trim).toList();
@@ -213,6 +243,16 @@ public abstract class BasePage {
 	 */
 	public String fieldError(String label) {
 		return textOf(inField(label, "//span[contains(@class,'oxd-input-field-error-message')]"));
+	}
+
+	/**
+	 * Waits for validation messages and returns all of them, top to bottom.
+	 *
+	 * @return List the messages under the form fields, e.g. [Required, Required].
+	 */
+	public List<String> validationErrors() {
+		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(FIELD_ERRORS))
+				.stream().map(WebElement::getText).map(String::trim).toList();
 	}
 
 	/**

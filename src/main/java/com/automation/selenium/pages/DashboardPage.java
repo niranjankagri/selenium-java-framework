@@ -7,7 +7,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.automation.selenium.config.Config;
 import com.automation.selenium.utils.Steps;
 
 /**
@@ -15,7 +14,7 @@ import com.automation.selenium.utils.Steps;
  */
 public class DashboardPage extends AppPage {
 
-	// Path of the dashboard, relative to the base URL (also used by LoginPage)
+	// Path of the dashboard, after APP_PATH (also used by LoginPage)
 	static final String PATH = "/dashboard/index";
 	// Title of each dashboard widget, e.g. "Time at Work", "Quick Launch"
 	private static final By WIDGET_TITLES = By.cssSelector(".orangehrm-dashboard-widget-name p");
@@ -28,14 +27,22 @@ public class DashboardPage extends AppPage {
 	}
 
 	/**
+	 * Requests the dashboard URL without waiting for the dashboard, e.g. to
+	 * check that a logged-out browser is sent to the login page instead.
+	 */
+	public void visit() {
+		Steps.log("Go to the dashboard URL");
+		openPath(PATH);
+	}
+
+	/**
 	 * Opens the dashboard by its URL. The browser must already be logged in;
 	 * all tabs of one browser share the session cookie.
 	 *
 	 * @return DashboardPage this page, loaded.
 	 */
 	public DashboardPage open() {
-		Steps.log("Open the dashboard by its URL");
-		driver.get(Config.get().baseUrl() + "/web/index.php" + PATH);
+		visit();
 		waitUntilLoaded();
 		return this;
 	}

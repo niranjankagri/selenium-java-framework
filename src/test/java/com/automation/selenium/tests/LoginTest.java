@@ -10,6 +10,7 @@ import com.automation.selenium.base.BaseTest;
 import com.automation.selenium.data.TestData;
 import com.automation.selenium.pages.DashboardPage;
 import com.automation.selenium.pages.LoginPage;
+import com.automation.selenium.utils.Steps;
 
 /**
  * Logging in and out of OrangeHRM.
@@ -77,5 +78,33 @@ public class LoginTest extends BaseTest {
 		LoginPage login = loginAsAdmin().logout();
 
 		assertTrue(login.isDisplayed(), "The login page should be shown after logout");
+	}
+
+	/**
+	 * Logs out, presses the browser's Back button, then reloads. Back alone
+	 * may show the browser's cached copy of the dashboard (back-forward
+	 * cache); the reload asks the server again, and with the session ended it
+	 * must answer with the login page.
+	 */
+	@Test(description = "Back and reload after logout end on the login page")
+	public void backAfterLogoutStaysLoggedOut() {
+		LoginPage login = loginAsAdmin().logout();
+		assertTrue(login.isDisplayed(), "The login page should be shown after logout");
+
+		Steps.log("Press the browser's Back button, then reload the page");
+		driver().navigate().back();
+		driver().navigate().refresh();
+		assertTrue(login.isDisplayed(), "After logout, reloading the previous page should end on the login page");
+	}
+
+	/**
+	 * Opens the dashboard URL in a browser that never logged in. OrangeHRM
+	 * must redirect to the login page instead of showing the dashboard.
+	 */
+	@Test(description = "The dashboard URL redirects to login when not logged in")
+	public void dashboardRequiresLogin() {
+		new DashboardPage(driver()).visit();
+
+		assertTrue(new LoginPage(driver()).isDisplayed(), "A logged-out browser should be sent to the login page");
 	}
 }

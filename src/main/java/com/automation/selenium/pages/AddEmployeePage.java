@@ -10,7 +10,7 @@ import com.automation.selenium.utils.Steps;
  */
 public class AddEmployeePage extends AppPage {
 
-	// Path of the page, relative to the base URL
+	// Path of the page, after APP_PATH
 	private static final String PATH = "/pim/addEmployee";
 
 	// Name inputs of the form
@@ -48,6 +48,18 @@ public class AddEmployeePage extends AppPage {
 		type(FIRST_NAME, firstName);
 		type(LAST_NAME, lastName);
 		type(input("Employee Id"), employeeId);
+		return this;
+	}
+
+	/**
+	 * Clicks Save without expecting it to work, e.g. to check the validation
+	 * messages of an incomplete form.
+	 *
+	 * @return AddEmployeePage this page, still shown.
+	 */
+	public AddEmployeePage trySave() {
+		Steps.log("Save the form");
+		click(SAVE);
 		return this;
 	}
 

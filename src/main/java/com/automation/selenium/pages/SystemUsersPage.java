@@ -2,7 +2,6 @@ package com.automation.selenium.pages;
 
 import java.util.List;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.automation.selenium.utils.Steps;
@@ -12,12 +11,8 @@ import com.automation.selenium.utils.Steps;
  */
 public class SystemUsersPage extends AppPage {
 
-	// Path of the page, relative to the base URL
+	// Path of the page, after APP_PATH
 	private static final String PATH = "/admin/viewSystemUsers";
-
-	// Buttons below the filter form
-	private static final By SEARCH = By.xpath("//button[normalize-space()='Search']");
-	private static final By RESET = By.xpath("//button[normalize-space()='Reset']");
 
 	/**
 	 * @param driver the browser this page works on.
@@ -73,7 +68,7 @@ public class SystemUsersPage extends AppPage {
 	 */
 	public SystemUsersPage search() {
 		Steps.log("Search");
-		click(SEARCH);
+		click(button("Search"));
 		waitForLoader();
 		return this;
 	}
@@ -85,7 +80,7 @@ public class SystemUsersPage extends AppPage {
 	 */
 	public SystemUsersPage reset() {
 		Steps.log("Reset the filters");
-		click(RESET);
+		click(button("Reset"));
 		waitForLoader();
 		return this;
 	}

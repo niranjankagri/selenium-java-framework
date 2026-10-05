@@ -12,13 +12,11 @@ import com.automation.selenium.utils.Steps;
  */
 public class EmployeeListPage extends AppPage {
 
-	// Path of the page, relative to the base URL
+	// Path of the page, after APP_PATH
 	private static final String PATH = "/pim/viewEmployeeList";
 
 	// "Add Employee" tab in the PIM top navigation
 	private static final By ADD_EMPLOYEE = By.xpath("//nav//a[normalize-space()='Add Employee']");
-	// Search button below the filter form
-	private static final By SEARCH = By.xpath("//button[normalize-space()='Search']");
 	// Button in the "Are you Sure?" dialog
 	private static final By CONFIRM_DELETE = By.xpath("//div[@role='document']//button[normalize-space()='Yes, Delete']");
 
@@ -61,7 +59,7 @@ public class EmployeeListPage extends AppPage {
 	public EmployeeListPage searchById(String employeeId) {
 		Steps.log("Search for employee ID \"" + employeeId + "\"");
 		type(input("Employee Id"), employeeId);
-		click(SEARCH);
+		click(button("Search"));
 		waitForLoader();
 		return this;
 	}

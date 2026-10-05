@@ -16,8 +16,8 @@ import com.automation.selenium.utils.Steps;
  */
 public class LoginPage extends BasePage {
 
-	// Path of the login page, relative to the base URL
-	private static final String PATH = "/web/index.php/auth/login";
+	// Path of the login page, after APP_PATH
+	private static final String PATH = "/auth/login";
 
 	// User name and password inputs of the login form
 	private static final By USERNAME = By.name("username");
@@ -43,7 +43,7 @@ public class LoginPage extends BasePage {
 	 */
 	public LoginPage open() {
 		Steps.log("Open the login page");
-		driver.get(Config.get().baseUrl() + PATH);
+		openPath(PATH);
 		waitVisible(USERNAME);
 		return this;
 	}

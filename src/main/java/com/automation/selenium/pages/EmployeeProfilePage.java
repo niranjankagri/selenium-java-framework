@@ -8,7 +8,7 @@ import org.openqa.selenium.WebDriver;
  */
 public class EmployeeProfilePage extends AppPage {
 
-	// Path of the page, relative to the base URL (followed by the employee number)
+	// Path of the page, after APP_PATH (followed by the employee number)
 	private static final String PATH = "/pim/viewPersonalDetails";
 	// Employee name above the profile picture
 	private static final By FULL_NAME = By.cssSelector(".orangehrm-edit-employee-name h6");
