@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 import com.automation.selenium.utils.Steps;
 
@@ -16,9 +18,11 @@ public class EmployeeListPage extends AppPage {
 	private static final String PATH = "/pim/viewEmployeeList";
 
 	// "Add Employee" tab in the PIM top navigation
-	private static final By ADD_EMPLOYEE = By.xpath("//nav//a[normalize-space()='Add Employee']");
+	@FindBy(xpath = "//nav//a[normalize-space()='Add Employee']")
+	private WebElement addEmployeeTab;
 	// Button in the "Are you Sure?" dialog
-	private static final By CONFIRM_DELETE = By.xpath("//div[@role='document']//button[normalize-space()='Yes, Delete']");
+	@FindBy(xpath = "//div[@role='document']//button[normalize-space()='Yes, Delete']")
+	private WebElement confirmDeleteButton;
 
 	/**
 	 * @param driver the browser this page works on.
@@ -44,7 +48,7 @@ public class EmployeeListPage extends AppPage {
 	 */
 	public AddEmployeePage addEmployee() {
 		Steps.log("Open \"Add Employee\"");
-		click(ADD_EMPLOYEE);
+		click(addEmployeeTab);
 		AddEmployeePage page = new AddEmployeePage(driver);
 		page.waitUntilLoaded();
 		return page;
@@ -94,10 +98,11 @@ public class EmployeeListPage extends AppPage {
 	 */
 	public String delete(String employeeId) {
 		Steps.log("Delete employee ID \"" + employeeId + "\"");
-		// The trash button of the row that has a cell with exactly this ID
+		// The trash button of the row that has a cell with exactly this ID; it depends
+		// on the ID, so it is built here instead of being a @FindBy field
 		click(By.xpath("//div[contains(@class,'oxd-table-card')][.//div[contains(@class,'oxd-table-cell')][normalize-space()='"
 				+ employeeId + "']]//button[.//i[contains(@class,'bi-trash')]]"));
-		click(CONFIRM_DELETE);
+		click(confirmDeleteButton);
 		// Read the toast first: it disappears again while the list reloads
 		String message = toast();
 		waitForLoader();

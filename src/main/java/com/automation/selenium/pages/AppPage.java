@@ -5,6 +5,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.automation.selenium.utils.Steps;
@@ -16,15 +17,20 @@ import com.automation.selenium.utils.Steps;
 public abstract class AppPage extends BasePage {
 
 	// Module name at the top left, e.g. "Dashboard", "Admin", "PIM"
-	private static final By MODULE_TITLE = By.cssSelector(".oxd-topbar-header-breadcrumb-module");
+	@FindBy(css = ".oxd-topbar-header-breadcrumb-module")
+	private WebElement moduleTitle;
 	// User menu at the top right (picture and name of the logged-in user); a click opens it
-	private static final By USER_MENU = By.cssSelector(".oxd-userdropdown-tab");
+	@FindBy(css = ".oxd-userdropdown-tab")
+	private WebElement userMenu;
 	// Name of the logged-in user inside the user menu tab
-	private static final By USER_NAME = By.cssSelector(".oxd-userdropdown-name");
+	@FindBy(css = ".oxd-userdropdown-name")
+	private WebElement userName;
 	// "Logout" entry of the opened user menu
-	private static final By LOGOUT = By.xpath("//ul[contains(@class,'oxd-dropdown-menu')]//a[normalize-space()='Logout']");
+	@FindBy(xpath = "//ul[contains(@class,'oxd-dropdown-menu')]//a[normalize-space()='Logout']")
+	private WebElement logoutLink;
 	// Every entry of the side menu (a link with the module name)
-	private static final By MENU_ITEMS = By.cssSelector("a.oxd-main-menu-item");
+	@FindBy(css = "a.oxd-main-menu-item")
+	private List<WebElement> menuEntries;
 
 	/**
 	 * @param driver the browser this page works on.
@@ -37,14 +43,14 @@ public abstract class AppPage extends BasePage {
 	 * @return String the module title in the top bar, e.g. "Admin".
 	 */
 	public String moduleTitle() {
-		return textOf(MODULE_TITLE);
+		return textOf(moduleTitle);
 	}
 
 	/**
 	 * @return String the name of the logged-in user, as shown at the top right.
 	 */
 	public String loggedInUser() {
-		return textOf(USER_NAME);
+		return textOf(userName);
 	}
 
 	/**
@@ -53,7 +59,7 @@ public abstract class AppPage extends BasePage {
 	 * @return List the module names, e.g. [Admin, PIM, Leave, …].
 	 */
 	public List<String> menuItems() {
-		return menuEntries().stream().map(WebElement::getText).map(String::trim).toList();
+		return textsOf(menuEntries);
 	}
 
 	/**
@@ -61,7 +67,7 @@ public abstract class AppPage extends BasePage {
 	 */
 	public List<String> menuLinks() {
 		// The href property is always absolute; the href attribute may be relative
-		return menuEntries().stream().map(link -> link.getDomProperty("href")).toList();
+		return visibleMenuEntries().stream().map(link -> link.getDomProperty("href")).toList();
 	}
 
 	/**
@@ -111,16 +117,16 @@ public abstract class AppPage extends BasePage {
 	 */
 	public LoginPage logout() {
 		Steps.log("Log out from the user menu");
-		click(USER_MENU);
-		click(LOGOUT);
+		click(userMenu);
+		click(logoutLink);
 		return new LoginPage(driver);
 	}
 
 	/**
 	 * @return List the side menu links, once they are all visible.
 	 */
-	private List<WebElement> menuEntries() {
-		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(MENU_ITEMS));
+	private List<WebElement> visibleMenuEntries() {
+		return wait.until(ExpectedConditions.visibilityOfAllElements(menuEntries));
 	}
 
 	/**

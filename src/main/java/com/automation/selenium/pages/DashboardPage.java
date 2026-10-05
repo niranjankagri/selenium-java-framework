@@ -2,10 +2,9 @@ package com.automation.selenium.pages;
 
 import java.util.List;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.FindBy;
 
 import com.automation.selenium.utils.Steps;
 
@@ -16,8 +15,10 @@ public class DashboardPage extends AppPage {
 
 	// Path of the dashboard, after APP_PATH (also used by LoginPage)
 	static final String PATH = "/dashboard/index";
+
 	// Title of each dashboard widget, e.g. "Time at Work", "Quick Launch"
-	private static final By WIDGET_TITLES = By.cssSelector(".orangehrm-dashboard-widget-name p");
+	@FindBy(css = ".orangehrm-dashboard-widget-name p")
+	private List<WebElement> widgetTitles;
 
 	/**
 	 * @param driver the browser this page works on.
@@ -52,7 +53,7 @@ public class DashboardPage extends AppPage {
 	 */
 	public void waitUntilLoaded() {
 		waitForUrl(PATH);
-		waitVisible(WIDGET_TITLES);
+		widgetTitles();
 	}
 
 	/**
@@ -66,7 +67,6 @@ public class DashboardPage extends AppPage {
 	 * @return List the titles of all widgets on the dashboard.
 	 */
 	public List<String> widgetTitles() {
-		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(WIDGET_TITLES))
-				.stream().map(WebElement::getText).map(String::trim).toList();
+		return textsOf(widgetTitles);
 	}
 }

@@ -1,7 +1,8 @@
 package com.automation.selenium.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 import com.automation.selenium.utils.Steps;
 
@@ -14,10 +15,13 @@ public class AddEmployeePage extends AppPage {
 	private static final String PATH = "/pim/addEmployee";
 
 	// Name inputs of the form
-	private static final By FIRST_NAME = By.name("firstName");
-	private static final By LAST_NAME = By.name("lastName");
+	@FindBy(name = "firstName")
+	private WebElement firstNameField;
+	@FindBy(name = "lastName")
+	private WebElement lastNameField;
 	// Save button at the bottom of the form
-	private static final By SAVE = By.cssSelector("button[type='submit']");
+	@FindBy(css = "button[type='submit']")
+	private WebElement saveButton;
 
 	/**
 	 * @param driver the browser this page works on.
@@ -34,7 +38,7 @@ public class AddEmployeePage extends AppPage {
 	public void waitUntilLoaded() {
 		waitForUrl(PATH);
 		waitForLoader();
-		waitVisible(FIRST_NAME);
+		waitVisible(firstNameField);
 	}
 
 	/**
@@ -48,8 +52,8 @@ public class AddEmployeePage extends AppPage {
 	 */
 	public AddEmployeePage fill(String firstName, String lastName, String employeeId) {
 		Steps.log("Enter employee \"" + firstName + " " + lastName + "\" with ID \"" + employeeId + "\"");
-		type(FIRST_NAME, firstName);
-		type(LAST_NAME, lastName);
+		type(firstNameField, firstName);
+		type(lastNameField, lastName);
 		type(input("Employee Id"), employeeId);
 		return this;
 	}
@@ -62,7 +66,7 @@ public class AddEmployeePage extends AppPage {
 	 */
 	public AddEmployeePage trySave() {
 		Steps.log("Save the form");
-		click(SAVE);
+		click(saveButton);
 		return this;
 	}
 
@@ -72,7 +76,7 @@ public class AddEmployeePage extends AppPage {
 	 * @return EmployeeProfilePage the profile OrangeHRM opens after saving.
 	 */
 	public EmployeeProfilePage save() {
-		click(SAVE);
+		click(saveButton);
 		// The step shows OrangeHRM's own confirmation, e.g. "Successfully Saved"
 		Steps.log("Save: \"" + toast() + "\"");
 		EmployeeProfilePage profile = new EmployeeProfilePage(driver);

@@ -19,13 +19,15 @@ import org.testng.annotations.Test;
 import com.automation.selenium.base.BaseTest;
 import com.automation.selenium.config.Config;
 import com.automation.selenium.pages.DashboardPage;
+import com.automation.selenium.pages.LoginPage;
 import com.automation.selenium.utils.Links;
 import com.automation.selenium.utils.Steps;
 
 /**
  * Selenium scenarios that interviews ask you to code, solved on OrangeHRM:
  * a list of elements, broken links, custom drop-down options, keyboard
- * actions, a new tab, JavaScript and an element screenshot.
+ * actions, a new tab, JavaScript, PageFactory caching and an element
+ * screenshot.
  * <p>
  * The locators and WebDriver calls live in the page objects; each test
  * explains the technique it shows. Window handling is a driver-level task,
@@ -145,6 +147,26 @@ public class SeleniumScenariosTest extends BaseTest {
 
 		assertEquals(readyState, "complete", "document.readyState");
 		assertEquals(title, driver().getTitle(), "Title from JavaScript and from WebDriver");
+	}
+
+	/**
+	 * PageFactory: a plain {@code @FindBy} field is a proxy that finds the
+	 * element again on every call, so it still works after a reload. With
+	 * {@code @CacheLookup} the proxy keeps the element it found first, which
+	 * belongs to the old page after the reload and throws
+	 * StaleElementReferenceException.
+	 */
+	@Test(description = "Scenario: PageFactory @FindBy vs @CacheLookup after a reload")
+	public void findByFieldSurvivesAReloadButCacheLookupGoesStale() {
+		LoginPage login = openLoginPage();
+		assertTrue(login.usernameFieldIsUsable(), "@FindBy field before the reload");
+		// The first use makes @CacheLookup remember this page's element
+		assertTrue(login.cachedUsernameFieldIsUsable(), "@CacheLookup field before the reload");
+
+		login.reload();
+
+		assertTrue(login.usernameFieldIsUsable(), "@FindBy should find the field on the new page");
+		assertFalse(login.cachedUsernameFieldIsUsable(), "@CacheLookup should still hold the old, stale element");
 	}
 
 	/**

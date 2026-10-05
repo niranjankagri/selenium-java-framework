@@ -1,7 +1,8 @@
 package com.automation.selenium.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * An employee's profile (Personal Details), shown after adding an employee.
@@ -10,8 +11,10 @@ public class EmployeeProfilePage extends AppPage {
 
 	// Path of the page, after APP_PATH (followed by the employee number)
 	private static final String PATH = "/pim/viewPersonalDetails";
+
 	// Employee name above the profile picture
-	private static final By FULL_NAME = By.cssSelector(".orangehrm-edit-employee-name h6");
+	@FindBy(css = ".orangehrm-edit-employee-name h6")
+	private WebElement fullNameHeader;
 
 	/**
 	 * @param driver the browser this page works on.
@@ -34,7 +37,7 @@ public class EmployeeProfilePage extends AppPage {
 	public String fullName() {
 		// The header is rendered before the name arrives, so wait for text in it
 		return wait.until(d -> {
-			String name = d.findElement(FULL_NAME).getText().trim();
+			String name = fullNameHeader.getText().trim();
 			return name.isEmpty() ? null : name;
 		});
 	}

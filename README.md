@@ -1,12 +1,12 @@
 # selenium-java-framework
 
-UI test automation framework for the [OrangeHRM open source demo](https://opensource-demo.orangehrmlive.com/web/index.php/auth/login), built with **Java 17, Selenium 4 and TestNG** using the Page Object Model.
+UI test automation framework for the [OrangeHRM open source demo](https://opensource-demo.orangehrmlive.com/web/index.php/auth/login), built with **Java 17, Selenium 4 and TestNG** using the Page Object Model and Selenium's PageFactory.
 
 It covers login and logout, access control (Back after logout, protected URLs), searching the Admin user list, and the PIM employee life cycle (add → find → delete, required fields), plus the Selenium scenarios and TestNG features that interviews ask about (see [Interview questions](#interview-questions)). Test classes run in parallel, each test in its own browser, and every run produces a self-contained HTML report with the steps of each test and a screenshot of every failure.
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of a full run with every group (`mvn clean test -Pdemo`): 37 tests, 33 passed, plus 2 failed and 2 skipped on purpose by the demo tests. Each test class is one collapsible row with its counts, a result bar and its total time; only the class with failures opens by default, so the whole run fits on one screen.*
+*Report of a full run with every group (`mvn clean test -Pdemo`): 38 tests, 34 passed, plus 2 failed and 2 skipped on purpose by the demo tests. Each test class is one collapsible row with its counts, a result bar and its total time; only the class with failures opens by default, so the whole run fits on one screen.*
 
 ## Tech stack
 
@@ -30,7 +30,7 @@ selenium-java-framework
     ├── main/java/com/automation/selenium
     │   ├── config      Config: config.properties + -D overrides
     │   ├── driver      DriverManager: one browser per thread (chrome / firefox / edge, headless)
-    │   ├── pages       BasePage (explicit waits, OrangeHRM widgets), AppPage (menu, user menu),
+    │   ├── pages       BasePage (PageFactory, explicit waits, OrangeHRM widgets), AppPage (menu, user menu),
     │   │               LoginPage, DashboardPage, SystemUsersPage,
     │   │               EmployeeListPage, AddEmployeePage, EmployeeProfilePage
     │   ├── report      HtmlReportListener (custom HTML report)
@@ -48,6 +48,16 @@ selenium-java-framework
 ## How it works
 
 - **Page objects** hold every locator and action; tests only call methods such as `loginAsAdmin().openAdmin().filterByUsername("Admin").search()` and assert on the results.
+- **PageFactory.** Fixed elements are `@FindBy` fields, filled once by `PageFactory.initElements(driver, this)` in the `BasePage` constructor:
+
+  ```java
+  @FindBy(name = "username")
+  private WebElement usernameField;
+  @FindBy(css = ".oxd-alert-content-text")
+  private List<WebElement> errorAlerts;   // empty list = no banner
+  ```
+
+  Each field is a proxy that finds the element again on every call, so it never goes stale when OrangeHRM re-renders the page, and the `BasePage` helpers (`click`, `type`, `textOf`, `textsOf`, `waitVisible`, `isVisible`) accept these fields as well as a `By`. `@CacheLookup` is left out on purpose (it keeps the first element, which goes stale after a reload; `SeleniumScenariosTest` shows this). Locators built from a value, such as a field label, a button text or a table row ID, cannot be annotations and stay methods that return a `By`.
 - **No `Thread.sleep`, no implicit waits.** `BasePage` wraps each action in an explicit wait that ignores stale elements (OrangeHRM re-renders forms and tables after each load), and waits for the loading spinner after searches.
 - **OrangeHRM widgets** are handled once in `BasePage`: fields are found by their visible label (`input("Username")`), buttons by their text (`button("Search")`), custom drop-downs (`choose("User Role", "Admin")`, `options(...)`), results tables are read as rows of *column title → text*, plus toasts, validation messages and the "Records Found" count. Pages are opened by path with `openPath("/auth/login")`, so the base URL lives only in `config.properties`.
 - **Parallel-ready.** `DriverManager` keeps one `WebDriver` per thread, and every test method gets a fresh browser, so tests never share state.
@@ -62,18 +72,18 @@ selenium-java-framework
 | `LoginTest` | `login` | Admin can log in (`smoke`) · invalid credentials are rejected (data provider: wrong password, unknown user, wrong case) · username and password required · password required · admin can log out (`smoke`) · Back and reload after logout end on the login page · the dashboard URL redirects to login when logged out |
 | `SystemUsersTest` | `admin` | System Users opens from the menu (`smoke`) · filter by username · filter by role and status · unknown username finds no records · Reset clears every filter |
 | `EmployeeTest` | `pim` | An employee can be added, found by ID and deleted (`smoke`) · first and last name are required · unknown employee ID finds no records |
-| `SeleniumScenariosTest` | `interview` | Read a list of elements · find broken links · read a custom drop-down's options · log in with keyboard actions · open a second tab and switch windows · run JavaScript · take an element screenshot |
+| `SeleniumScenariosTest` | `interview` | Read a list of elements · find broken links · read a custom drop-down's options · log in with keyboard actions · open a second tab and switch windows · run JavaScript · PageFactory `@FindBy` vs `@CacheLookup` after a reload · take an element screenshot |
 | `TestNgFeaturesTest` | `interview` | `SoftAssert` · `expectedExceptions` · `priority` + `dependsOnMethods` · `invocationCount` (runs twice) · `timeOut` · `retryAnalyzer` · `@Parameters` with `@Optional` |
 | `ReportDemoTest` | `demo` | Fail and skip **on purpose** (see below) |
 
-A normal run has 33 tests: 17 core tests and 16 interview tests (data providers and `invocationCount` add runs). It takes about 3 to 4 minutes on 3 threads.
+A normal run has 34 tests: 17 core tests and 17 interview tests (data providers and `invocationCount` add runs). It takes about 3 to 4 minutes on 3 threads.
 
 Latest results (5 Oct 2026, headless Chrome, JDK 27, 3 threads):
 
 | Command | Tests | Passed | Failed | Skipped | Time |
 |---|---|---|---|---|---|
-| `mvn clean test -Dheadless=true` | 33 | 33 | 0 | 0 | 3 min 45 s |
-| `mvn clean test -Pdemo -Dheadless=true` | 37 | 33 | 2 (on purpose) | 2 (on purpose) | 2 min 32 s |
+| `mvn clean test -Dheadless=true` | 34 | 34 | 0 | 0 | 2 min 22 s |
+| `mvn clean test -Pdemo -Dheadless=true` | 38 | 34 | 2 (on purpose) | 2 (on purpose) | 2 min 38 s |
 
 ### Demo tests: failed and skipped results
 
@@ -142,7 +152,7 @@ It is built to stay short and easy to scan:
 
 [`docs/interview-questions.pdf`](docs/interview-questions.pdf) has 104 Selenium and TestNG interview questions. Every answer has an explanation, an example, and an **In the framework** link to the exact file of this repository where it is done (or why it is not used). A References section at the end maps every file to its questions and links the official Selenium, TestNG and Surefire documentation. The coding scenarios are real, commented tests:
 
-- `SeleniumScenariosTest`: each test is one classic Selenium task (broken links, windows, drop-downs, `Actions`, `JavascriptExecutor`, element screenshots), with the technique explained in its Javadoc.
+- `SeleniumScenariosTest`: each test is one classic Selenium task (broken links, windows, drop-downs, `Actions`, `JavascriptExecutor`, PageFactory caching, element screenshots), with the technique explained in its Javadoc.
 - `TestNgFeaturesTest`: each test uses one TestNG feature on a real check, with what it does and when to use it.
 
 ## Known limitations
@@ -153,7 +163,7 @@ It is built to stay short and easy to scan:
 
 ## Adding a test
 
-1. Add or extend a page object in `pages` (extend `AppPage` for pages after login), keep locators `private static final`, and log each user action with `Steps.log`.
+1. Add or extend a page object in `pages` (extend `AppPage` for pages after login), declare its fixed elements as private `@FindBy` fields (no initial value: `PageFactory` fills them), build value-dependent locators as `By` methods, and log each user action with `Steps.log`.
 2. Add navigation to the new page from the page that leads to it (e.g. a method in `AppPage` for a side-menu entry).
 3. Write the test in `tests`, extending `BaseTest`, and give it a `description` and a group.
 4. Put shared or generated data in `TestData`.

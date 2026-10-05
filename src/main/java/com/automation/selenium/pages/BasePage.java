@@ -13,6 +13,8 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -23,28 +25,44 @@ import com.automation.selenium.config.Config;
  * so no page needs {@code Thread.sleep} or an implicit wait, and knows the
  * OrangeHRM widgets used on every page (labelled fields, drop-downs, tables,
  * toasts and the loading spinner).
+ * <p>
+ * Pages declare their fixed elements as {@link FindBy @FindBy} fields, which
+ * the constructor fills with Selenium's {@link PageFactory}. Each field holds
+ * a proxy that looks the element up again on every call, so an element the
+ * page has re-rendered never goes stale. Locators built from a value (a field
+ * label, a button text, a table cell) cannot be annotations and stay methods
+ * that return a {@link By}.
  */
 public abstract class BasePage {
 
 	// Every OrangeHRM page lives under this path; page PATHs are relative to it
 	protected static final String APP_PATH = "/web/index.php";
 
-	// Spinner OrangeHRM shows while a form or table is loading
-	private static final By LOADER = By.cssSelector(".oxd-loading-spinner, .oxd-form-loader");
 	// How long to wait for the spinner to show up; fast responses may never show it
 	private static final Duration LOADER_APPEAR_TIMEOUT = Duration.ofSeconds(2);
-	// Message shown at the bottom right after a save or delete
-	private static final By TOAST_MESSAGE = By.cssSelector(".oxd-toast .oxd-text--toast-message");
-	// Column titles and rows of a results table
-	private static final By TABLE_HEADERS = By.cssSelector(".oxd-table-header .oxd-table-th");
-	private static final By TABLE_ROWS = By.cssSelector(".oxd-table-body .oxd-table-card");
+	// Cells of one table row, searched inside that row (a relative locator cannot be a field)
 	private static final By TABLE_CELLS = By.cssSelector(".oxd-table-cell");
+
+	// Spinner OrangeHRM shows while a form or table is loading (an empty list when there is none)
+	@FindBy(css = ".oxd-loading-spinner, .oxd-form-loader")
+	private List<WebElement> loaders;
+	// Message shown at the bottom right after a save or delete
+	@FindBy(css = ".oxd-toast .oxd-text--toast-message")
+	private WebElement toastMessage;
+	// Column titles and rows of a results table
+	@FindBy(css = ".oxd-table-header .oxd-table-th")
+	private List<WebElement> tableHeaders;
+	@FindBy(css = ".oxd-table-body .oxd-table-card")
+	private List<WebElement> tableRowElements;
 	// Options of an opened drop-down list
-	private static final By DROPDOWN_OPTIONS = By.cssSelector("div[role='listbox'] div[role='option']");
+	@FindBy(css = "div[role='listbox'] div[role='option']")
+	private List<WebElement> dropdownOptions;
 	// Validation messages under form fields, e.g. "Required"
-	private static final By FIELD_ERRORS = By.cssSelector(".oxd-input-field-error-message");
+	@FindBy(css = ".oxd-input-field-error-message")
+	private List<WebElement> fieldErrors;
 	// "(3) Records Found" / "No Records Found" above a results table
-	private static final By RECORDS_FOUND = By.xpath("//span[contains(normalize-space(),'Record Found') or contains(normalize-space(),'Records Found')]");
+	@FindBy(xpath = "//span[contains(normalize-space(),'Record Found') or contains(normalize-space(),'Records Found')]")
+	private WebElement recordsFoundLabel;
 
 	// The browser this page works on
 	protected final WebDriver driver;
@@ -60,6 +78,10 @@ public abstract class BasePage {
 		// OrangeHRM re-renders parts of the page after each load; an element that is
 		// replaced while we wait is simply looked up again on the next poll
 		this.wait.ignoring(StaleElementReferenceException.class);
+		// Fills every @FindBy field of this page and its parent classes with a
+		// lazy proxy. It runs before the subclass's own field initializers, so
+		// @FindBy fields must never be given a value of their own
+		PageFactory.initElements(driver, this);
 	}
 
 	/**
@@ -81,6 +103,15 @@ public abstract class BasePage {
 	}
 
 	/**
+	 * Waits until the element is clickable, then clicks it.
+	 *
+	 * @param element the element to click, usually a {@code @FindBy} field.
+	 */
+	protected void click(WebElement element) {
+		wait.until(ExpectedConditions.elementToBeClickable(element)).click();
+	}
+
+	/**
 	 * Replaces the text of a field. Select-all + delete is used instead of
 	 * {@code clear()}, because the page's form model does not notice a
 	 * {@code clear()} and would keep the old value.
@@ -89,7 +120,17 @@ public abstract class BasePage {
 	 * @param text    the text to type; empty leaves the field empty.
 	 */
 	protected void type(By locator, String text) {
-		WebElement field = wait.until(ExpectedConditions.elementToBeClickable(locator));
+		type(wait.until(ExpectedConditions.elementToBeClickable(locator)), text);
+	}
+
+	/**
+	 * Replaces the text of a field, like {@link #type(By, String)}.
+	 *
+	 * @param element the input field, usually a {@code @FindBy} field.
+	 * @param text    the text to type; empty leaves the field empty.
+	 */
+	protected void type(WebElement element, String text) {
+		WebElement field = wait.until(ExpectedConditions.elementToBeClickable(element));
 		field.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE);
 		if (!text.isEmpty()) {
 			field.sendKeys(text);
@@ -105,11 +146,39 @@ public abstract class BasePage {
 	}
 
 	/**
+	 * @param element     the element to wait for, usually a {@code @FindBy} field.
+	 * @return WebElement the element, once it is visible.
+	 */
+	protected WebElement waitVisible(WebElement element) {
+		return wait.until(ExpectedConditions.visibilityOf(element));
+	}
+
+	/**
 	 * @param locator  the element to read.
 	 * @return String  its visible text, trimmed.
 	 */
 	protected String textOf(By locator) {
 		return waitVisible(locator).getText().trim();
+	}
+
+	/**
+	 * @param element  the element to read, usually a {@code @FindBy} field.
+	 * @return String  its visible text, trimmed.
+	 */
+	protected String textOf(WebElement element) {
+		return waitVisible(element).getText().trim();
+	}
+
+	/**
+	 * Waits until the list has at least one element and all of them are
+	 * visible, then reads them.
+	 *
+	 * @param elements the elements to read, usually a {@code @FindBy} list field.
+	 * @return List    the visible text of each element, trimmed, in page order.
+	 */
+	protected List<String> textsOf(List<WebElement> elements) {
+		return wait.until(ExpectedConditions.visibilityOfAllElements(elements))
+				.stream().map(WebElement::getText).map(String::trim).toList();
 	}
 
 	/**
@@ -129,6 +198,21 @@ public abstract class BasePage {
 	protected boolean isVisible(By locator) {
 		try {
 			waitVisible(locator);
+			return true;
+		} catch (TimeoutException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Waits for the element to become visible.
+	 *
+	 * @param element   the element to wait for, usually a {@code @FindBy} field.
+	 * @return boolean  true if it appeared within the timeout, false otherwise.
+	 */
+	protected boolean isVisible(WebElement element) {
+		try {
+			waitVisible(element);
 			return true;
 		} catch (TimeoutException e) {
 			return false;
@@ -156,11 +240,12 @@ public abstract class BasePage {
 	 */
 	protected void waitForLoader() {
 		try {
-			new WebDriverWait(driver, LOADER_APPEAR_TIMEOUT).until(ExpectedConditions.presenceOfElementLocated(LOADER));
+			// The proxy list is looked up again on every poll, so it fills once the spinner is added
+			new WebDriverWait(driver, LOADER_APPEAR_TIMEOUT).until(d -> !loaders.isEmpty());
 		} catch (TimeoutException e) {
 			// The response came back before the spinner was shown
 		}
-		wait.until(ExpectedConditions.invisibilityOfElementLocated(LOADER));
+		wait.until(ExpectedConditions.invisibilityOfAllElements(loaders));
 	}
 
 	/**
@@ -222,8 +307,7 @@ public abstract class BasePage {
 	protected List<String> options(String label) {
 		By field = selectField(label);
 		click(field);
-		List<String> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(DROPDOWN_OPTIONS))
-				.stream().map(WebElement::getText).map(String::trim).toList();
+		List<String> options = textsOf(dropdownOptions);
 		// A second click on the field closes the list, so the page is left as it was
 		click(field);
 		return options;
@@ -251,8 +335,7 @@ public abstract class BasePage {
 	 * @return List the messages under the form fields, e.g. [Required, Required].
 	 */
 	public List<String> validationErrors() {
-		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(FIELD_ERRORS))
-				.stream().map(WebElement::getText).map(String::trim).toList();
+		return textsOf(fieldErrors);
 	}
 
 	/**
@@ -261,14 +344,14 @@ public abstract class BasePage {
 	 * @return String the toast message, e.g. "Successfully Saved".
 	 */
 	protected String toast() {
-		return textOf(TOAST_MESSAGE);
+		return textOf(toastMessage);
 	}
 
 	/**
 	 * @return String the record count above the results table, e.g. "(3) Records Found".
 	 */
 	protected String recordsFound() {
-		return textOf(RECORDS_FOUND);
+		return textOf(recordsFoundLabel);
 	}
 
 	/**
@@ -280,11 +363,12 @@ public abstract class BasePage {
 	protected List<Map<String, String>> tableRows() {
 		return wait.until(d -> {
 			List<String> headers = new ArrayList<>();
-			for (WebElement header : d.findElements(TABLE_HEADERS)) {
+			// Every loop over a proxy list finds the elements again, so a retry reads the new table
+			for (WebElement header : tableHeaders) {
 				headers.add(header.getText().trim());
 			}
 			List<Map<String, String>> rows = new ArrayList<>();
-			for (WebElement row : d.findElements(TABLE_ROWS)) {
+			for (WebElement row : tableRowElements) {
 				List<WebElement> cells = row.findElements(TABLE_CELLS);
 				Map<String, String> values = new LinkedHashMap<>();
 				// Cells are matched to the column titles by position
