@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!--
+	Suite for running from the IDE (right-click → Run). Maven does not use this
+	file; it runs every *Test class with the same settings (see pom.xml).
+	The HTML report listener registers itself through META-INF/services,
+	so it is not listed here (it would run twice).
+-->
+<suite name="OrangeHRM UI Suite" parallel="classes" thread-count="3">
+	<test name="OrangeHRM UI Tests">
+		<packages>
+			<package name="com.automation.selenium.tests" />
+		</packages>
+	</test>
+</suite>

@@ -1,0 +1,80 @@
+<!--
+	Maven build for selenium-java-framework.
+
+	Run all tests:            mvn clean test
+	Run without a window:     mvn clean test -Dheadless=true
+	Run one group:            mvn clean test -Dgroups=smoke
+	Change parallel threads:  mvn clean test -Dthreads=1
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.automation</groupId>
+	<artifactId>selenium-java-framework</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>selenium-java-framework</name>
+	<description>UI test automation framework built with Selenium WebDriver, TestNG and the Page Object Model</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Compile for Java 17 (any newer JDK can build it) -->
+		<maven.compiler.release>17</maven.compiler.release>
+		<!-- Test classes run in parallel on this many threads (one browser each); override with -Dthreads=N -->
+		<threads>3</threads>
+	</properties>
+
+	<dependencies>
+		<!-- Browser automation; Selenium Manager downloads the matching driver -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>4.50.0</version>
+		</dependency>
+		<!-- Test runner; also used by the page objects (Reporter steps) and the report listener -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>7.12.0</version>
+		</dependency>
+		<!-- Silences the "no SLF4J provider" warning of libraries that log through SLF4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>2.0.17</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Compiles for Java 17 (see maven.compiler.release) and reports deprecated API use -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.16.0</version>
+				<configuration>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+				</configuration>
+			</plugin>
+			<!--
+				Runs every *Test class with TestNG. No suite file is used here, so
+				-Dgroups=... and -Dtest=... work as usual; testng.xml is for the IDE.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.6</version>
+				<configuration>
+					<parallel>classes</parallel>
+					<threadCount>${threads}</threadCount>
+					<!-- Without it, a project path with spaces breaks the forked JVM's classpath -->
+					<useSystemClassLoader>false</useSystemClassLoader>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,21 @@
+# Build output and reports
+target/
+test-output/
+
+# IDE files
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Browser driver binaries (Selenium Manager downloads drivers automatically)
+*.exe
