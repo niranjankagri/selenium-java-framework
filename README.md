@@ -6,7 +6,7 @@ It covers login and logout, access control (Back after logout, protected URLs), 
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of the core and demo tests (`mvn clean test -Pdemo -Dgroups=login,admin,pim,demo`): 21 tests, 17 passed, 2 failed and 2 skipped on purpose, grouped by class with groups and durations.*
+*Report of a full run with every group (`mvn clean test -Pdemo`): 36 tests, 32 passed, plus 2 failed and 2 skipped on purpose by the demo tests, grouped by class with groups and durations.*
 
 ## Tech stack
 
@@ -67,6 +67,13 @@ selenium-java-framework
 | `ReportDemoTest` | `demo` | Fail and skip **on purpose** (see below) |
 
 A normal run has 32 tests: 17 core tests and 15 interview tests (data providers and `invocationCount` add runs). It takes about 3 minutes on 3 threads.
+
+Latest results (5 Oct 2026, headless Chrome, JDK 27, 3 threads):
+
+| Command | Tests | Passed | Failed | Skipped | Time |
+|---|---|---|---|---|---|
+| `mvn clean test -Dheadless=true` | 32 | 32 | 0 | 0 | about 2 min 50 s |
+| `mvn clean test -Pdemo -Dheadless=true` | 36 | 32 | 2 (on purpose) | 2 (on purpose) | 3 min 08 s |
 
 ### Demo tests: failed and skipped results
 
