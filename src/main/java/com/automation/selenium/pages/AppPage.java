@@ -13,9 +13,11 @@ public abstract class AppPage extends BasePage {
 
 	// Module name at the top left, e.g. "Dashboard", "Admin", "PIM"
 	private static final By MODULE_TITLE = By.cssSelector(".oxd-topbar-header-breadcrumb-module");
-	// Name of the logged-in user at the top right; opens the user menu
+	// User menu at the top right (picture and name of the logged-in user); a click opens it
 	private static final By USER_MENU = By.cssSelector(".oxd-userdropdown-tab");
+	// Name of the logged-in user inside the user menu tab
 	private static final By USER_NAME = By.cssSelector(".oxd-userdropdown-name");
+	// "Logout" entry of the opened user menu
 	private static final By LOGOUT = By.xpath("//ul[contains(@class,'oxd-dropdown-menu')]//a[normalize-space()='Logout']");
 
 	/**
@@ -80,6 +82,7 @@ public abstract class AppPage extends BasePage {
 	 */
 	private void openMenu(String item) {
 		Steps.log("Open \"" + item + "\" from the side menu");
+		// Side menu links are matched by their visible text
 		click(By.xpath("//a[contains(@class,'oxd-main-menu-item')][normalize-space()='" + item + "']"));
 	}
 }

@@ -63,9 +63,11 @@ public class HtmlReportListener implements IReporter {
 		List<ITestResult> results = new ArrayList<>();
 		String suiteName = DEFAULT_TITLE;
 		for (ISuite suite : suites) {
+			// Keep a real suite name (testng.xml); Maven's and TestNG's default names are replaced
 			if (!suite.getName().startsWith("Surefire") && !suite.getName().startsWith("Default")) {
 				suiteName = suite.getName();
 			}
+			// Every result of every <test>, whatever its status
 			for (ISuiteResult suiteResult : suite.getResults().values()) {
 				ITestContext context = suiteResult.getTestContext();
 				results.addAll(context.getPassedTests().getAllResults());
@@ -74,6 +76,7 @@ public class HtmlReportListener implements IReporter {
 				results.addAll(context.getSkippedTests().getAllResults());
 			}
 		}
+		// The report lists the tests in the order they ran
 		results.sort(Comparator.comparingLong(ITestResult::getStartMillis));
 		Path file = Path.of(outputDirectory, FILE_NAME);
 		try {
@@ -91,15 +94,18 @@ public class HtmlReportListener implements IReporter {
 	 * @return String   the complete HTML page.
 	 */
 	private String render(String suiteName, List<ITestResult> results) {
+		// Counts, pass rate and run time for the summary panel
 		long passed = results.stream().filter(r -> status(r).equals("passed")).count();
 		long failed = results.stream().filter(r -> status(r).equals("failed")).count();
 		long skipped = results.size() - passed - failed;
 		int rate = results.isEmpty() ? 0 : (int) Math.round(passed * 100.0 / results.size());
 		long start = results.stream().mapToLong(ITestResult::getStartMillis).min().orElse(System.currentTimeMillis());
 		long end = results.stream().mapToLong(ITestResult::getEndMillis).max().orElse(start);
+		// The longest test fills its duration bar; at least 1 so there is no division by zero
 		long longest = Math.max(1, results.stream().mapToLong(r -> r.getEndMillis() - r.getStartMillis()).max().orElse(1));
 		String verdict = failed > 0 ? "failed" : results.isEmpty() || passed == 0 ? "skipped" : "passed";
 
+		// One section per test class, in run order
 		Map<String, List<ITestResult>> byClass = results.stream().collect(Collectors.groupingBy(
 				r -> r.getTestClass().getRealClass().getSimpleName(), LinkedHashMap::new, Collectors.toList()));
 
@@ -115,6 +121,8 @@ public class HtmlReportListener implements IReporter {
 			classes.append("</section>");
 		}
 
+		// Fill the page template; the ring's circle has a circumference of 100,
+		// so the pass rate is also its dash length
 		return TEMPLATE
 				.replace("{{suite}}", esc(suiteName))
 				.replace("{{verdict}}", verdict)
@@ -147,6 +155,8 @@ public class HtmlReportListener implements IReporter {
 	private String renderTest(ITestResult result, int id, long longest) {
 		String status = status(result);
 		long millis = result.getEndMillis() - result.getStartMillis();
+		// Title: the @Test description, else the method name as a sentence;
+		// a data-provider row adds its first parameter (the case name)
 		String description = result.getMethod().getDescription();
 		String title = description == null || description.isBlank() ? readable(result.getMethod().getMethodName()) : description;
 		String params = result.getParameters().length == 0 ? "" : Arrays.stream(result.getParameters()).map(String::valueOf)
@@ -154,9 +164,11 @@ public class HtmlReportListener implements IReporter {
 		if (result.getParameters().length > 0) {
 			title += " — " + result.getParameters()[0];
 		}
+		// TestNG groups, shown as @tags
 		String groups = Arrays.stream(result.getMethod().getGroups()).sorted().distinct()
 				.map(g -> "<span class=\"tag\">@" + esc(g) + "</span>").collect(Collectors.joining());
 
+		// Steps recorded with Steps.log during the test
 		StringBuilder body = new StringBuilder();
 		List<String> steps = Reporter.getOutput(result);
 		if (!steps.isEmpty()) {
@@ -166,6 +178,7 @@ public class HtmlReportListener implements IReporter {
 			}
 			body.append("</ol>");
 		}
+		// Failure or skip reason; the stack trace is shown for failures only
 		Throwable error = result.getThrowable();
 		if (error != null) {
 			String kind = status.equals("skipped") ? "skip" : "error";
@@ -178,6 +191,7 @@ public class HtmlReportListener implements IReporter {
 			}
 			body.append("</div>");
 		}
+		// Screenshot taken by BaseTest when the test failed
 		Object screenshot = result.getAttribute(SCREENSHOT_ATTRIBUTE);
 		if (screenshot != null) {
 			body.append("<figure class=\"shot\"><a href=\"#\" class=\"zoom\" title=\"Click to enlarge\"><img alt=\"Screenshot at failure\" src=\"data:image/png;base64,")
@@ -187,6 +201,7 @@ public class HtmlReportListener implements IReporter {
 			body.append("<p class=\"muted\">No steps recorded.</p>");
 		}
 
+		// Text the search box matches; failed tests start expanded
 		String search = (title + " " + result.getMethod().getMethodName() + " " + result.getTestClass().getRealClass().getSimpleName()
 				+ " " + String.join(" ", result.getMethod().getGroups())).toLowerCase();
 		return "<article class=\"test " + status + "\" data-status=\"" + status + "\" data-search=\"" + esc(search) + "\""
@@ -248,6 +263,7 @@ public class HtmlReportListener implements IReporter {
 	 */
 	private static String trace(Throwable error) {
 		StringBuilder out = new StringBuilder();
+		// Walk the cause chain, stopping at a throwable that is its own cause
 		for (Throwable t = error; t != null; t = t.getCause() == t ? null : t.getCause()) {
 			out.append(t == error ? "" : "Caused by: ").append(t).append('\n');
 			for (StackTraceElement element : t.getStackTrace()) {
@@ -311,6 +327,7 @@ public class HtmlReportListener implements IReporter {
 			<link rel="preconnect" href="https://fonts.googleapis.com">
 			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 			<style>
+			/* Colours: light theme, then the dark theme */
 			:root{--bg:#f4f5fb;--card:#fff;--ink:#1c1e3a;--muted:#6a6f8e;--line:#e3e5f0;--accent:#4f46e5;--accent2:#0ea5e9;
 			--pass:#16a34a;--pass-bg:#e8f7ee;--fail:#dc2626;--fail-bg:#fdecec;--skip:#d97706;--skip-bg:#fdf3e2;--code:#f1f2f8;--shadow:0 1px 2px rgba(20,22,60,.06),0 4px 16px rgba(20,22,60,.05)}
 			[data-theme=dark]{--bg:#0f1020;--card:#181a30;--ink:#e7e8f6;--muted:#9a9dbb;--line:#2a2d4a;--accent:#818cf8;--accent2:#38bdf8;
@@ -318,6 +335,7 @@ public class HtmlReportListener implements IReporter {
 			*{box-sizing:border-box}
 			body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 			code,pre{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
+			/* Header, summary panel and environment facts */
 			header{background:linear-gradient(120deg,#312e81,#4f46e5 55%,#0ea5e9);color:#fff;padding:32px 24px 88px}
 			.wrap{max-width:1120px;margin:0 auto}
 			.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
@@ -343,6 +361,7 @@ public class HtmlReportListener implements IReporter {
 			.stack i{display:block}.stack .p{background:var(--pass)}.stack .f{background:var(--fail)}.stack .s{background:var(--skip)}
 			dl.env{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:4px 20px;margin:0;padding:16px 24px;border-top:1px solid var(--line)}
 			dl.env dt{color:var(--muted);font-size:12px}dl.env dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+			/* Toolbar: search, status filter and buttons; stays at the top while scrolling */
 			.toolbar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0;padding:12px;background:var(--bg)}
 			.toolbar input{flex:1 1 220px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
 			.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
@@ -350,6 +369,7 @@ public class HtmlReportListener implements IReporter {
 			.seg button+button{border-left:1px solid var(--line)}
 			.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
 			.btn{border:1px solid var(--line);border-radius:10px}
+			/* Test cards, grouped by class */
 			.group h2{font-size:15px;margin:24px 0 10px;display:flex;gap:10px;align-items:baseline}
 			.group h2 span{font-weight:400;color:var(--muted);font-size:13px}
 			.test{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--pass);border-radius:12px;margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
@@ -366,6 +386,7 @@ public class HtmlReportListener implements IReporter {
 			.test[open] .chev{transform:rotate(45deg)}
 			.body{display:none;padding:4px 20px 18px 20px;border-top:1px solid var(--line)}
 			.test[open] .body{display:block}
+			/* Card body: steps, error, stack trace and screenshot */
 			.steps{margin:14px 0;padding-left:22px}.steps li{padding:3px 0}.steps li::marker{color:var(--muted);font-size:12px}
 			q{quotes:none;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;background:var(--code);color:var(--accent);padding:1px 6px;border-radius:5px}
 			.error,.skip{border-radius:10px;padding:12px 14px;margin:12px 0;background:var(--fail-bg)}
@@ -381,6 +402,7 @@ public class HtmlReportListener implements IReporter {
 			.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;place-content:center;padding:24px;z-index:10;cursor:zoom-out}
 			.lightbox img{max-width:96vw;max-height:92vh;border-radius:8px}
 			footer{text-align:center;color:var(--muted);font-size:12px;padding:0 0 32px}
+			/* Small screens and printing */
 			@media (max-width:720px){.summary{grid-template-columns:1fr;justify-items:center}.stats{grid-template-columns:repeat(2,1fr);width:100%}
 			.head{grid-template-columns:auto 1fr auto}.tags,.bar{display:none}}
 			@media print{header{background:#312e81;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toolbar,.chev{display:none}.body{display:block!important}.test{break-inside:avoid}}
@@ -424,8 +446,10 @@ public class HtmlReportListener implements IReporter {
 			<script>
 			(function(){
 			var tests=[].slice.call(document.querySelectorAll('.test')),filter='all',q=document.getElementById('q');
+			// Open or close a card on click and keep aria-expanded in step
 			function sync(t){t.querySelector('.head').setAttribute('aria-expanded',t.hasAttribute('open'))}
 			tests.forEach(function(t){sync(t);t.querySelector('.head').addEventListener('click',function(){t.toggleAttribute('open');sync(t)})});
+			// Search and status filter; a class section is hidden when none of its tests is shown
 			function apply(){var term=q.value.trim().toLowerCase(),shown=0;
 			tests.forEach(function(t){var ok=(filter==='all'||t.dataset.status===filter)&&t.dataset.search.indexOf(term)>=0;t.style.display=ok?'':'none';if(ok)shown++});
 			document.querySelectorAll('.group').forEach(function(g){g.style.display=[].some.call(g.querySelectorAll('.test'),function(t){return t.style.display!=='none'})?'':'none'});
@@ -433,14 +457,17 @@ public class HtmlReportListener implements IReporter {
 			q.addEventListener('input',apply);
 			document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){filter=b.dataset.f;
 			document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});apply()})});
+			// Expand all / Collapse all
 			var expand=document.getElementById('expand');
 			expand.addEventListener('click',function(){var open=expand.textContent==='Expand all';
 			tests.forEach(function(t){t.toggleAttribute('open',open);sync(t)});expand.textContent=open?'Collapse all':'Expand all'});
+			// Light/dark theme: the saved choice, else the system setting
 			var root=document.documentElement,theme=document.getElementById('theme');
 			function setTheme(d){root.dataset.theme=d?'dark':'light';theme.textContent=d?'Light mode':'Dark mode';try{localStorage.setItem('report-theme',root.dataset.theme)}catch(e){}}
 			var saved=null;try{saved=localStorage.getItem('report-theme')}catch(e){}
 			setTheme(saved?saved==='dark':window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
 			theme.addEventListener('click',function(){setTheme(root.dataset.theme!=='dark')});
+			// Click a screenshot to see it full size; click again to close
 			var box=document.getElementById('lightbox');
 			document.querySelectorAll('.zoom').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();box.querySelector('img').src=a.querySelector('img').src;box.style.display='grid'})});
 			box.addEventListener('click',function(){box.style.display='none'});

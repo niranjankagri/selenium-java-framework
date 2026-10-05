@@ -38,6 +38,7 @@ public final class TestData {
 	 * @return Employee a new employee.
 	 */
 	public static Employee newEmployee() {
+		// "QA" + 8 digits = 10 characters, the most the Employee Id field accepts
 		String number = String.format("%08d", ThreadLocalRandom.current().nextInt(100_000_000));
 		return new Employee("Selenium", "Test" + number, "QA" + number);
 	}

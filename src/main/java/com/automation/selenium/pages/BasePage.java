@@ -227,6 +227,7 @@ public abstract class BasePage {
 			for (WebElement row : d.findElements(TABLE_ROWS)) {
 				List<WebElement> cells = row.findElements(TABLE_CELLS);
 				Map<String, String> values = new LinkedHashMap<>();
+				// Cells are matched to the column titles by position
 				for (int i = 0; i < cells.size() && i < headers.size(); i++) {
 					values.put(headers.get(i), cells.get(i).getText().trim());
 				}

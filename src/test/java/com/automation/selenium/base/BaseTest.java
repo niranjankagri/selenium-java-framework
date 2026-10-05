@@ -88,6 +88,7 @@ public abstract class BaseTest {
 			String base64 = ((TakesScreenshot) driver()).getScreenshotAs(OutputType.BASE64);
 			result.setAttribute(HtmlReportListener.SCREENSHOT_ATTRIBUTE, base64);
 			Files.createDirectories(SCREENSHOT_DIR);
+			// Class_method_timestamp.png, so data-provider rows and reruns never overwrite each other
 			String name = result.getTestClass().getRealClass().getSimpleName() + "_" + result.getMethod().getMethodName()
 					+ "_" + System.currentTimeMillis() + ".png";
 			Files.write(SCREENSHOT_DIR.resolve(name), Base64.getDecoder().decode(base64));

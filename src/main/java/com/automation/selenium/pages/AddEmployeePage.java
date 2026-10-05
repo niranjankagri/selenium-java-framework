@@ -13,8 +13,10 @@ public class AddEmployeePage extends AppPage {
 	// Path of the page, relative to the base URL
 	private static final String PATH = "/pim/addEmployee";
 
+	// Name inputs of the form
 	private static final By FIRST_NAME = By.name("firstName");
 	private static final By LAST_NAME = By.name("lastName");
+	// Save button at the bottom of the form
 	private static final By SAVE = By.cssSelector("button[type='submit']");
 
 	/**
@@ -56,6 +58,7 @@ public class AddEmployeePage extends AppPage {
 	 */
 	public EmployeeProfilePage save() {
 		click(SAVE);
+		// The step shows OrangeHRM's own confirmation, e.g. "Successfully Saved"
 		Steps.log("Save: \"" + toast() + "\"");
 		EmployeeProfilePage profile = new EmployeeProfilePage(driver);
 		profile.waitUntilLoaded();

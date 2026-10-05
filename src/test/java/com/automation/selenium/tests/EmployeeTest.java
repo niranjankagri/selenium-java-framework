@@ -20,6 +20,10 @@ import com.automation.selenium.pages.EmployeeProfilePage;
 @Test(groups = "pim")
 public class EmployeeTest extends BaseTest {
 
+	/**
+	 * Adds an employee with a random ID, checks the new profile, finds the
+	 * employee by ID in the list, deletes it and checks it is gone.
+	 */
 	@Test(groups = "smoke", description = "An employee can be added, found by ID and deleted")
 	public void employeeCanBeAddedFoundAndDeleted() {
 		Employee employee = TestData.newEmployee();
@@ -43,6 +47,9 @@ public class EmployeeTest extends BaseTest {
 		assertTrue(list.employeeIds().isEmpty(), "The deleted employee should not be found");
 	}
 
+	/**
+	 * Searches for an employee ID that does not exist and checks the empty result.
+	 */
 	@Test(description = "Searching for an unknown employee ID finds no records")
 	public void unknownEmployeeIdFindsNoRecords() {
 		EmployeeListPage list = loginAsAdmin().openPim().searchById("NO-SUCH-ID");

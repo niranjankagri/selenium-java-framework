@@ -15,8 +15,10 @@ public class LoginPage extends BasePage {
 	// Path of the login page, relative to the base URL
 	private static final String PATH = "/web/index.php/auth/login";
 
+	// User name and password inputs of the login form
 	private static final By USERNAME = By.name("username");
 	private static final By PASSWORD = By.name("password");
+	// Login button below the form
 	private static final By LOGIN_BUTTON = By.cssSelector("button[type='submit']");
 	// Banner above the form, e.g. "Invalid credentials"
 	private static final By ERROR_ALERT = By.cssSelector(".oxd-alert-content-text");
@@ -65,6 +67,8 @@ public class LoginPage extends BasePage {
 	 */
 	public DashboardPage loginAs(String username, String password) {
 		submit(username, password);
+		// A rejected login stays on the login page; fail with its error banner
+		// instead of a timeout while waiting for the dashboard
 		if (!waitForUrl(DashboardPage.PATH)) {
 			String error = driver.findElements(ERROR_ALERT).stream().map(WebElement::getText).findFirst().orElse("no error shown");
 			throw new IllegalStateException("Login as \"" + username + "\" failed: " + error);

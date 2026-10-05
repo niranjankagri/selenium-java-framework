@@ -15,6 +15,7 @@ public class SystemUsersPage extends AppPage {
 	// Path of the page, relative to the base URL
 	private static final String PATH = "/admin/viewSystemUsers";
 
+	// Buttons below the filter form
 	private static final By SEARCH = By.xpath("//button[normalize-space()='Search']");
 	private static final By RESET = By.xpath("//button[normalize-space()='Reset']");
 
@@ -31,6 +32,7 @@ public class SystemUsersPage extends AppPage {
 	public void waitUntilLoaded() {
 		waitForUrl(PATH);
 		waitForLoader();
+		// The record count is shown once the table has loaded
 		recordsFound();
 	}
 

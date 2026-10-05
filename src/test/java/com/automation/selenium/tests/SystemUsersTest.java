@@ -22,6 +22,9 @@ public class SystemUsersTest extends BaseTest {
 	// Placeholder the drop-down filters show when nothing is chosen
 	private static final String NOTHING_CHOSEN = "-- Select --";
 
+	/**
+	 * Opens Admin from the side menu and checks the title and that users are listed.
+	 */
 	@Test(groups = "smoke", description = "System Users page opens from the Admin menu")
 	public void systemUsersPageOpensFromMenu() {
 		SystemUsersPage users = loginAsAdmin().openAdmin();
@@ -30,6 +33,9 @@ public class SystemUsersTest extends BaseTest {
 		assertFalse(users.usernames().isEmpty(), "The user list should not be empty");
 	}
 
+	/**
+	 * Searches for user name "Admin" and checks that every listed user is Admin.
+	 */
 	@Test(description = "Filtering by username lists only that user")
 	public void filterByUsername() {
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByUsername("Admin").search();
@@ -39,6 +45,9 @@ public class SystemUsersTest extends BaseTest {
 		assertTrue(usernames.stream().allMatch("Admin"::equals), "Only 'Admin' should be listed, got " + usernames);
 	}
 
+	/**
+	 * Searches for enabled admins and checks the role and status of every listed user.
+	 */
 	@Test(description = "Filtering by role and status lists only matching users")
 	public void filterByRoleAndStatus() {
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByRole("Admin").filterByStatus("Enabled").search();
@@ -50,6 +59,9 @@ public class SystemUsersTest extends BaseTest {
 		assertTrue(statuses.stream().allMatch("Enabled"::equals), "Only enabled users should be listed, got " + statuses);
 	}
 
+	/**
+	 * Searches for a user name that does not exist and checks the empty result.
+	 */
 	@Test(description = "Searching for an unknown username finds no records")
 	public void unknownUsernameFindsNoRecords() {
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByUsername("no.such.user.42").search();
@@ -58,6 +70,9 @@ public class SystemUsersTest extends BaseTest {
 		assertTrue(users.usernames().isEmpty(), "The table should be empty");
 	}
 
+	/**
+	 * Sets all three filters, presses Reset and checks that every filter is empty again.
+	 */
 	@Test(description = "Reset clears every filter")
 	public void resetClearsFilters() {
 		SystemUsersPage users = loginAsAdmin().openAdmin()

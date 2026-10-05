@@ -15,7 +15,9 @@ public class EmployeeListPage extends AppPage {
 	// Path of the page, relative to the base URL
 	private static final String PATH = "/pim/viewEmployeeList";
 
+	// "Add Employee" tab in the PIM top navigation
 	private static final By ADD_EMPLOYEE = By.xpath("//nav//a[normalize-space()='Add Employee']");
+	// Search button below the filter form
 	private static final By SEARCH = By.xpath("//button[normalize-space()='Search']");
 	// Button in the "Are you Sure?" dialog
 	private static final By CONFIRM_DELETE = By.xpath("//div[@role='document']//button[normalize-space()='Yes, Delete']");
@@ -33,6 +35,7 @@ public class EmployeeListPage extends AppPage {
 	public void waitUntilLoaded() {
 		waitForUrl(PATH);
 		waitForLoader();
+		// The record count is shown once the table has loaded
 		recordsFound();
 	}
 
@@ -93,9 +96,11 @@ public class EmployeeListPage extends AppPage {
 	 */
 	public String delete(String employeeId) {
 		Steps.log("Delete employee ID \"" + employeeId + "\"");
+		// The trash button of the row that has a cell with exactly this ID
 		click(By.xpath("//div[contains(@class,'oxd-table-card')][.//div[contains(@class,'oxd-table-cell')][normalize-space()='"
 				+ employeeId + "']]//button[.//i[contains(@class,'bi-trash')]]"));
 		click(CONFIRM_DELETE);
+		// Read the toast first: it disappears again while the list reloads
 		String message = toast();
 		waitForLoader();
 		return message;

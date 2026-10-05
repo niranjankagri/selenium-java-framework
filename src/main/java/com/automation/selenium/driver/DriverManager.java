@@ -40,6 +40,7 @@ public final class DriverManager {
 	 */
 	public static WebDriver start(String browser, boolean headless) {
 		quit();
+		// Each browser's options add the headless flag and the window size
 		WebDriver driver = switch (browser.toLowerCase(Locale.ROOT)) {
 		case "chrome" -> new ChromeDriver(chromeOptions(headless));
 		case "firefox" -> new FirefoxDriver(firefoxOptions(headless));
@@ -107,6 +108,7 @@ public final class DriverManager {
 		if (headless) {
 			options.addArguments("-headless");
 		}
+		// Firefox takes the window size as two separate flags
 		options.addArguments("-width=" + WIDTH, "-height=" + HEIGHT);
 		return options;
 	}
