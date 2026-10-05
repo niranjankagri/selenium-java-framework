@@ -6,7 +6,7 @@ It covers login and logout, access control (Back after logout, protected URLs), 
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of a full run with every group (`mvn clean test -Pdemo`): 37 tests, 33 passed, plus 2 failed and 2 skipped on purpose by the demo tests, grouped by class with groups and durations.*
+*Report of a full run with every group (`mvn clean test -Pdemo`): 37 tests, 33 passed, plus 2 failed and 2 skipped on purpose by the demo tests. Each test class is one collapsible row with its counts, a result bar and its total time; only the class with failures opens by default, so the whole run fits on one screen.*
 
 ## Tech stack
 
@@ -86,7 +86,7 @@ Latest results (5 Oct 2026, headless Chrome, JDK 27, 3 threads):
 | Precondition missing | Skipped (`SkipException`) | The steps run so far and the skip reason |
 | Depends on a failed test | Skipped (dependency) | The test it depends on; it never starts |
 
-Filtered to **Failed**, each failure shows the steps that ran, the error and the browser at the moment of failure:
+With the **Failed** filter and the failed cards opened, each failure shows the steps that ran, the error and the browser at the moment of failure:
 
 ![Failed tests in the HTML report](docs/images/html-report-failures.png)
 
@@ -129,7 +129,14 @@ In the IDE, run `testng.xml` or any test class / method directly.
 | Failure screenshots | `target/screenshots/<Class>_<method>_<time>.png` (also embedded in the report) |
 | TestNG / Surefire reports | `target/surefire-reports/` |
 
-The HTML report shows the verdict, pass rate, the environment (application, browser, Java, OS), and every test grouped by class with its groups, duration, recorded steps, failure message, filtered stack trace and screenshot. Skipped tests show their reason (a `SkipException` message, or the failed test they depend on). It has search, status filters, expand/collapse all, a dark mode and print styles, and works offline as a single file.
+The HTML report shows the verdict, pass rate, the environment (application, browser, Java, OS), and every test grouped by class with its groups, duration, recorded steps, failure message, filtered stack trace and screenshot. Skipped tests show their reason (a `SkipException` message, or the failed test they depend on). It works offline as a single file.
+
+It is built to stay short and easy to scan:
+
+- **Collapsible class groups:** one row per test class with pass/fail/skip chips, a small result bar and the total test time. Classes with a failure or skip come first and start open; the others start closed. Click a row to open it.
+- **Smart filters:** search (test name, class or `@group`) and the status filter open exactly the groups that have matches and hide the rest; clearing them restores the previous view.
+- **Effects:** the pass-rate ring and bars grow in, the numbers count up, groups and cards open and close smoothly, cards fade in one after another and lift on hover, the header gradient drifts slowly, and a failed run's status dot pulses. All motion is switched off when the reader's system asks for reduced motion.
+- **Also:** expand/collapse all, click a screenshot to enlarge it, dark mode, and print styles that print everything expanded.
 
 ## Interview questions
 

@@ -27,10 +27,13 @@ public class AddEmployeePage extends AppPage {
 	}
 
 	/**
-	 * Waits until the form is shown.
+	 * Waits until the form is shown and its loading overlay is gone. The
+	 * overlay covers the Save button while the form loads, so a click before
+	 * it disappears fails with ElementClickInterceptedException.
 	 */
 	public void waitUntilLoaded() {
 		waitForUrl(PATH);
+		waitForLoader();
 		waitVisible(FIRST_NAME);
 	}
 

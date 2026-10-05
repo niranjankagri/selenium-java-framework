@@ -76,7 +76,9 @@ public class LoginPage extends BasePage {
 		// A rejected login stays on the login page; fail with its error banner
 		// instead of a timeout while waiting for the dashboard
 		if (!waitForUrl(DashboardPage.PATH)) {
-			String error = driver.findElements(ERROR_ALERT).stream().map(WebElement::getText).findFirst().orElse("no error shown");
+			// Without a login error, name the page instead: it shows server errors such as "HTTP ERROR 500"
+			String error = driver.findElements(ERROR_ALERT).stream().map(WebElement::getText).findFirst()
+					.orElse("no login error shown; the browser is on \"" + driver.getTitle() + "\" at " + driver.getCurrentUrl());
 			throw new IllegalStateException("Login as \"" + username + "\" failed: " + error);
 		}
 		DashboardPage dashboard = new DashboardPage(driver);
