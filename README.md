@@ -6,7 +6,7 @@ It covers login and logout, searching the Admin user list, and the full life cyc
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of a run with the demo tests (`mvn clean test -Pdemo`): 14 passed, plus 2 failures and 2 skips on purpose. Failed tests open with their steps, error and screenshot.*
+*Report of a run with the demo tests (`mvn clean test -Pdemo`): 18 tests, 14 passed, 2 failed and 2 skipped on purpose, grouped by class with groups and durations.*
 
 ## Tech stack
 
@@ -22,7 +22,7 @@ It covers login and logout, searching the Admin user list, and the full life cyc
 
 ```
 selenium-java-framework
-├── docs/images/html-report.png        Report screenshot used in this README
+├── docs/images/                      Report screenshots used in this README (overview, failures)
 ├── pom.xml
 ├── testng.xml                         Suite for running from the IDE
 └── src
@@ -73,6 +73,10 @@ selenium-java-framework
 | Login with a wrong password | Failed (error) | `IllegalStateException: Login as "Admin" failed: Invalid credentials`, screenshot of the login page |
 | Precondition missing | Skipped (`SkipException`) | The steps run so far and the skip reason |
 | Depends on a failed test | Skipped (dependency) | The test it depends on; it never starts |
+
+Filtered to **Failed**, each failure shows the steps that ran, the error and the browser at the moment of failure:
+
+![Failed tests in the HTML report](docs/images/html-report-failures.png)
 
 The `demo` group is left out of normal runs (`excludedGroups` in `pom.xml`, `<exclude>` in `testng.xml`), so the build stays green. Include it with the `demo` profile; the build then ends as failed, as it should.
 
