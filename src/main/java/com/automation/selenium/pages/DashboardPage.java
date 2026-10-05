@@ -7,6 +7,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.automation.selenium.config.Config;
+import com.automation.selenium.utils.Steps;
+
 /**
  * The dashboard, the first page after login.
  */
@@ -22,6 +25,19 @@ public class DashboardPage extends AppPage {
 	 */
 	public DashboardPage(WebDriver driver) {
 		super(driver);
+	}
+
+	/**
+	 * Opens the dashboard by its URL. The browser must already be logged in;
+	 * all tabs of one browser share the session cookie.
+	 *
+	 * @return DashboardPage this page, loaded.
+	 */
+	public DashboardPage open() {
+		Steps.log("Open the dashboard by its URL");
+		driver.get(Config.get().baseUrl() + "/web/index.php" + PATH);
+		waitUntilLoaded();
+		return this;
 	}
 
 	/**

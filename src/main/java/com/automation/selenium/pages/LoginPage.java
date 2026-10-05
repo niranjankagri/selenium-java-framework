@@ -1,8 +1,12 @@
 package com.automation.selenium.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.automation.selenium.config.Config;
 import com.automation.selenium.utils.Steps;
@@ -22,6 +26,8 @@ public class LoginPage extends BasePage {
 	private static final By LOGIN_BUTTON = By.cssSelector("button[type='submit']");
 	// Banner above the form, e.g. "Invalid credentials"
 	private static final By ERROR_ALERT = By.cssSelector(".oxd-alert-content-text");
+	// The login form (fields and button), for an element screenshot
+	private static final By LOGIN_FORM = By.tagName("form");
 
 	/**
 	 * @param driver the browser this page works on.
@@ -76,6 +82,55 @@ public class LoginPage extends BasePage {
 		DashboardPage dashboard = new DashboardPage(driver);
 		dashboard.waitUntilLoaded();
 		return dashboard;
+	}
+
+	/**
+	 * Logs in with the keyboard only, using one {@link Actions} chain: click
+	 * into the user name, type it, Tab to the password, type it, Enter submits.
+	 *
+	 * @param username      the user name.
+	 * @param password      the password.
+	 * @return DashboardPage the page shown after a successful login.
+	 */
+	public DashboardPage loginWithKeyboard(String username, String password) {
+		Steps.log("Log in with the keyboard: type \"" + username + "\", Tab, type \"" + mask(password) + "\", Enter");
+		WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(USERNAME));
+		// Nothing happens until perform(); the chain is then sent as one sequence
+		new Actions(driver)
+				.click(usernameField)
+				.sendKeys(username)
+				.sendKeys(Keys.TAB)
+				.sendKeys(password)
+				.sendKeys(Keys.ENTER)
+				.perform();
+		DashboardPage dashboard = new DashboardPage(driver);
+		dashboard.waitUntilLoaded();
+		return dashboard;
+	}
+
+	/**
+	 * Takes a screenshot of the login form only (Selenium 4 element screenshot).
+	 *
+	 * @return byte[] the PNG image of the form.
+	 */
+	public byte[] formScreenshot() {
+		Steps.log("Take a screenshot of the login form only");
+		return waitVisible(LOGIN_FORM).getScreenshotAs(OutputType.BYTES);
+	}
+
+	/**
+	 * @param label   the field label, "Username" or "Password".
+	 * @return String the hint shown in the empty field.
+	 */
+	public String placeholder(String label) {
+		return waitVisible(input(label)).getDomAttribute("placeholder");
+	}
+
+	/**
+	 * @return String the text on the login button.
+	 */
+	public String buttonText() {
+		return textOf(LOGIN_BUTTON);
 	}
 
 	/**

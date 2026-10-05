@@ -2,11 +2,11 @@
 
 UI test automation framework for the [OrangeHRM open source demo](https://opensource-demo.orangehrmlive.com/web/index.php/auth/login), built with **Java 17, Selenium 4 and TestNG** using the Page Object Model.
 
-It covers login and logout, searching the Admin user list, and the full life cycle of a PIM employee (add → find → delete). Test classes run in parallel, each test in its own browser, and every run produces a self-contained HTML report with the steps of each test and a screenshot of every failure.
+It covers login and logout, searching the Admin user list, and the full life cycle of a PIM employee (add → find → delete), plus the Selenium scenarios and TestNG features that interviews ask about (see [Interview questions](#interview-questions)). Test classes run in parallel, each test in its own browser, and every run produces a self-contained HTML report with the steps of each test and a screenshot of every failure.
 
 ![HTML test report](docs/images/html-report.png)
 
-*Report of a run with the demo tests (`mvn clean test -Pdemo`): 18 tests, 14 passed, 2 failed and 2 skipped on purpose, grouped by class with groups and durations.*
+*Report of the core and demo tests (`mvn clean test -Pdemo -Dgroups=login,admin,pim,demo`): 18 tests, 14 passed, 2 failed and 2 skipped on purpose, grouped by class with groups and durations.*
 
 ## Tech stack
 
@@ -23,6 +23,7 @@ It covers login and logout, searching the Admin user list, and the full life cyc
 ```
 selenium-java-framework
 ├── docs/images/                      Report screenshots used in this README (overview, failures)
+├── docs/interview-questions.pdf       Selenium + TestNG interview questions with answers
 ├── pom.xml
 ├── testng.xml                         Suite for running from the IDE
 └── src
@@ -33,12 +34,13 @@ selenium-java-framework
     │   │               LoginPage, DashboardPage, SystemUsersPage,
     │   │               EmployeeListPage, AddEmployeePage, EmployeeProfilePage
     │   ├── report      HtmlReportListener (custom HTML report)
-    │   └── utils       Steps: records test steps for the report
+    │   └── utils       Steps: records test steps for the report; Links: HTTP status of a link
     ├── main/resources/META-INF/services   Registers the report listener with TestNG
     ├── test/java/com/automation/selenium
-    │   ├── base        BaseTest: browser per test, screenshot on failure
+    │   ├── base        BaseTest: browser per test, screenshot on failure; RetryOnce: retry analyzer
     │   ├── data        TestData: data providers, generated employees
     │   └── tests       LoginTest, SystemUsersTest, EmployeeTest,
+    │                   SeleniumScenariosTest, TestNgFeaturesTest (group interview),
     │                   ReportDemoTest (fails and skips on purpose, group demo)
     └── test/resources/config.properties
 ```
@@ -59,9 +61,11 @@ selenium-java-framework
 | `LoginTest` | `login` | Admin can log in (`smoke`) · invalid credentials are rejected (data provider: wrong password, unknown user, wrong case) · username and password required · password required · admin can log out (`smoke`) |
 | `SystemUsersTest` | `admin` | System Users opens from the menu (`smoke`) · filter by username · filter by role and status · unknown username finds no records · Reset clears every filter |
 | `EmployeeTest` | `pim` | An employee can be added, found by ID and deleted (`smoke`) · unknown employee ID finds no records |
+| `SeleniumScenariosTest` | `interview` | Read a list of elements · find broken links · read a custom drop-down's options · log in with keyboard actions · open a second tab and switch windows · run JavaScript · take an element screenshot |
+| `TestNgFeaturesTest` | `interview` | `SoftAssert` · `expectedExceptions` · `priority` + `dependsOnMethods` · `invocationCount` (runs twice) · `retryAnalyzer` · `@Parameters` with `@Optional` |
 | `ReportDemoTest` | `demo` | Fail and skip **on purpose** (see below) |
 
-14 real tests (the data provider runs three times); a full run takes about a minute on 3 threads.
+29 tests in a normal run (data providers and `invocationCount` add runs); it takes about 3 minutes on 3 threads.
 
 ### Demo tests: failed and skipped results
 
@@ -87,7 +91,7 @@ Requirements: JDK 17 or newer, Maven, and Chrome (or Firefox/Edge).
 ```bash
 mvn clean test                          # all tests, visible browser
 mvn clean test -Dheadless=true          # without a window
-mvn clean test -Dgroups=smoke           # one group: smoke, login, admin or pim
+mvn clean test -Dgroups=smoke           # one group: smoke, login, admin, pim or interview
 mvn clean test -Dtest=LoginTest         # one class
 mvn clean test -Dbrowser=edge           # chrome (default), firefox or edge
 mvn clean test -Dthreads=1              # run the classes one after another
@@ -118,6 +122,13 @@ In the IDE, run `testng.xml` or any test class / method directly.
 | TestNG / Surefire reports | `target/surefire-reports/` |
 
 The HTML report shows the verdict, pass rate, the environment (application, browser, Java, OS), and every test grouped by class with its groups, duration, recorded steps, failure message, filtered stack trace and screenshot. Skipped tests show their reason (a `SkipException` message, or the failed test they depend on). It has search, status filters, expand/collapse all, a dark mode and print styles, and works offline as a single file.
+
+## Interview questions
+
+[`docs/interview-questions.pdf`](docs/interview-questions.pdf) has Selenium and TestNG interview questions with model answers. Many answers point to this framework, and the coding scenarios are real, commented tests:
+
+- `SeleniumScenariosTest`: each test is one classic Selenium task (broken links, windows, drop-downs, `Actions`, `JavascriptExecutor`, element screenshots), with the technique explained in its Javadoc.
+- `TestNgFeaturesTest`: each test uses one TestNG feature on a real check, with what it does and when to use it.
 
 ## Adding a test
 

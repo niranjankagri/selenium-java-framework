@@ -8,6 +8,8 @@
 	as in Maven; run ReportDemoTest directly to see it.
 -->
 <suite name="OrangeHRM UI Suite" parallel="classes" thread-count="3">
+	<!-- Read by TestNgFeaturesTest.titleMatchesTheSuiteParameter (@Parameters) -->
+	<parameter name="expectedTitle" value="OrangeHRM" />
 	<test name="OrangeHRM UI Tests">
 		<groups>
 			<run>

@@ -119,6 +119,14 @@ public class SystemUsersPage extends AppPage {
 	}
 
 	/**
+	 * @return List every option of the User Role filter, e.g. [-- Select --, Admin, ESS].
+	 */
+	public List<String> roleOptions() {
+		Steps.log("Read the options of the \"User Role\" drop-down");
+		return options("User Role");
+	}
+
+	/**
 	 * @return String the text in the Username filter.
 	 */
 	public String usernameFilter() {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -36,6 +37,8 @@ public abstract class BasePage {
 	private static final By TABLE_ROWS = By.cssSelector(".oxd-table-body .oxd-table-card");
 	private static final By TABLE_CELLS = By.cssSelector(".oxd-table-cell");
 	// "(3) Records Found" / "No Records Found" above a results table
+	// Options of an opened drop-down list
+	private static final By DROPDOWN_OPTIONS = By.cssSelector("div[role='listbox'] div[role='option']");
 	private static final By RECORDS_FOUND = By.xpath("//span[contains(normalize-space(),'Record Found') or contains(normalize-space(),'Records Found')]");
 
 	// The browser this page works on
@@ -180,6 +183,23 @@ public abstract class BasePage {
 	}
 
 	/**
+	 * Opens one of OrangeHRM's drop-downs, reads every option and closes it
+	 * again, e.g. to check the choices a user is offered.
+	 *
+	 * @param label  the visible field label, e.g. "User Role".
+	 * @return List  the option texts in display order, including "-- Select --".
+	 */
+	protected List<String> options(String label) {
+		By field = inField(label, "//div[contains(@class,'oxd-select-text')]");
+		click(field);
+		List<String> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(DROPDOWN_OPTIONS))
+				.stream().map(WebElement::getText).map(String::trim).toList();
+		// A second click on the field closes the list, so the page is left as it was
+		click(field);
+		return options;
+	}
+
+	/**
 	 * @param label  the visible field label.
 	 * @return String the option shown in that drop-down ("-- Select --" if none).
 	 */
@@ -235,6 +255,19 @@ public abstract class BasePage {
 			}
 			return rows;
 		});
+	}
+
+	/**
+	 * Runs JavaScript in the page, for what the WebDriver API cannot do. Use it
+	 * sparingly: a JavaScript click, for example, skips the checks a real
+	 * click makes (visible, not covered), so it can hide real bugs.
+	 *
+	 * @param script  the script; {@code return} hands a value back.
+	 * @param args    values the script reads as {@code arguments[0]}, {@code arguments[1]} …
+	 * @return Object the returned value as String, Long, Double, Boolean, WebElement, List or null.
+	 */
+	protected Object runScript(String script, Object... args) {
+		return ((JavascriptExecutor) driver).executeScript(script, args);
 	}
 
 	/**
