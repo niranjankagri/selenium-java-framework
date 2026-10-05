@@ -185,7 +185,7 @@ public class HtmlReportListener implements IReporter {
 			body.append("<div class=\"").append(kind).append("\"><div class=\"error-title\">")
 					.append(status.equals("skipped") ? "Skipped: " : "")
 					.append(esc(error.getClass().getSimpleName())).append("</div><pre class=\"message\">")
-					.append(esc(error.getMessage() == null ? error.toString() : error.getMessage())).append("</pre>");
+					.append(esc(message(error))).append("</pre>");
 			if (!status.equals("skipped")) {
 				body.append("<details><summary>Stack trace</summary><pre class=\"trace\">").append(esc(trace(error))).append("</pre></details>");
 			}
@@ -255,6 +255,17 @@ public class HtmlReportListener implements IReporter {
 	 */
 	private static String highlight(String escaped) {
 		return escaped.replaceAll("&quot;(.*?)&quot;", "<q>$1</q>");
+	}
+
+	/**
+	 * @param error    the failure or skip reason.
+	 * @return String  its message (the exception itself if it has none), without
+	 *                 the " on instance Class@1a2b3c" object ids TestNG adds to
+	 *                 the message of a test skipped because a dependency failed.
+	 */
+	private static String message(Throwable error) {
+		String message = error.getMessage() == null ? error.toString() : error.getMessage();
+		return message.replaceAll(" on instance [\\w.$]+@\\p{XDigit}+", "");
 	}
 
 	/**

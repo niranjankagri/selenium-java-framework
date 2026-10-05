@@ -5,6 +5,7 @@
 	Run without a window:     mvn clean test -Dheadless=true
 	Run one group:            mvn clean test -Dgroups=smoke
 	Change parallel threads:  mvn clean test -Dthreads=1
+	Include the demo tests:   mvn clean test -Pdemo   (they fail and skip on purpose)
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -25,6 +26,8 @@
 		<maven.compiler.release>17</maven.compiler.release>
 		<!-- Test classes run in parallel on this many threads (one browser each); override with -Dthreads=N -->
 		<threads>3</threads>
+		<!-- Groups left out of a run; "demo" holds the tests that fail and skip on purpose (see the demo profile) -->
+		<excludedGroups>demo</excludedGroups>
 	</properties>
 
 	<dependencies>
@@ -71,10 +74,26 @@
 				<configuration>
 					<parallel>classes</parallel>
 					<threadCount>${threads}</threadCount>
+					<excludedGroups>${excludedGroups}</excludedGroups>
 					<!-- Without it, a project path with spaces breaks the forked JVM's classpath -->
 					<useSystemClassLoader>false</useSystemClassLoader>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!--
+			mvn clean test -Pdemo also runs ReportDemoTest, whose tests fail and skip
+			on purpose, so the report shows every outcome. The build then ends as failed.
+			Only the demo tests: mvn clean test -Pdemo -Dgroups=demo
+		-->
+		<profile>
+			<id>demo</id>
+			<properties>
+				<!-- No real group is called "none", so nothing is left out -->
+				<excludedGroups>none</excludedGroups>
+			</properties>
+		</profile>
+	</profiles>
 </project>

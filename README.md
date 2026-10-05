@@ -6,6 +6,8 @@ It covers login and logout, searching the Admin user list, and the full life cyc
 
 ![HTML test report](docs/images/html-report.png)
 
+*Report of a run with the demo tests (`mvn clean test -Pdemo`): 14 passed, plus 2 failures and 2 skips on purpose. Failed tests open with their steps, error and screenshot.*
+
 ## Tech stack
 
 | | |
@@ -36,7 +38,8 @@ selenium-java-framework
     ├── test/java/com/automation/selenium
     │   ├── base        BaseTest: browser per test, screenshot on failure
     │   ├── data        TestData: data providers, generated employees
-    │   └── tests       LoginTest, SystemUsersTest, EmployeeTest
+    │   └── tests       LoginTest, SystemUsersTest, EmployeeTest,
+    │                   ReportDemoTest (fails and skips on purpose, group demo)
     └── test/resources/config.properties
 ```
 
@@ -56,8 +59,22 @@ selenium-java-framework
 | `LoginTest` | `login` | Admin can log in (`smoke`) · invalid credentials are rejected (data provider: wrong password, unknown user, wrong case) · username and password required · password required · admin can log out (`smoke`) |
 | `SystemUsersTest` | `admin` | System Users opens from the menu (`smoke`) · filter by username · filter by role and status · unknown username finds no records · Reset clears every filter |
 | `EmployeeTest` | `pim` | An employee can be added, found by ID and deleted (`smoke`) · unknown employee ID finds no records |
+| `ReportDemoTest` | `demo` | Fail and skip **on purpose** (see below) |
 
-14 tests in total (the data provider runs three times); a full run takes about a minute on 3 threads.
+14 real tests (the data provider runs three times); a full run takes about a minute on 3 threads.
+
+### Demo tests: failed and skipped results
+
+`ReportDemoTest` shows how the framework and the report handle every outcome, not just passes:
+
+| Test | Result | What the report shows |
+|---|---|---|
+| Dashboard title checked against a wrong value | Failed (assertion) | `expected [Home] but found [Dashboard]`, stack trace, screenshot |
+| Login with a wrong password | Failed (error) | `IllegalStateException: Login as "Admin" failed: Invalid credentials`, screenshot of the login page |
+| Precondition missing | Skipped (`SkipException`) | The steps run so far and the skip reason |
+| Depends on a failed test | Skipped (dependency) | The test it depends on; it never starts |
+
+The `demo` group is left out of normal runs (`excludedGroups` in `pom.xml`, `<exclude>` in `testng.xml`), so the build stays green. Include it with the `demo` profile; the build then ends as failed, as it should.
 
 ## How to run
 
@@ -70,6 +87,8 @@ mvn clean test -Dgroups=smoke           # one group: smoke, login, admin or pim
 mvn clean test -Dtest=LoginTest         # one class
 mvn clean test -Dbrowser=edge           # chrome (default), firefox or edge
 mvn clean test -Dthreads=1              # run the classes one after another
+mvn clean test -Pdemo                   # also run the demo tests (2 fail, 2 skip on purpose)
+mvn clean test -Pdemo -Dgroups=demo     # only the demo tests
 ```
 
 In the IDE, run `testng.xml` or any test class / method directly.
@@ -94,7 +113,7 @@ In the IDE, run `testng.xml` or any test class / method directly.
 | Failure screenshots | `target/screenshots/<Class>_<method>_<time>.png` (also embedded in the report) |
 | TestNG / Surefire reports | `target/surefire-reports/` |
 
-The HTML report shows the verdict, pass rate, the environment (application, browser, Java, OS), and every test grouped by class with its groups, duration, recorded steps, failure message, filtered stack trace and screenshot. It has search, status filters, expand/collapse all, a dark mode and print styles, and works offline as a single file.
+The HTML report shows the verdict, pass rate, the environment (application, browser, Java, OS), and every test grouped by class with its groups, duration, recorded steps, failure message, filtered stack trace and screenshot. Skipped tests show their reason (a `SkipException` message, or the failed test they depend on). It has search, status filters, expand/collapse all, a dark mode and print styles, and works offline as a single file.
 
 ## Adding a test
 
