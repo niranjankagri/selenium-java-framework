@@ -310,9 +310,11 @@ This separation keeps each example focused on the **interview concept being demo
 
 # Interview Question Index
 
-The repository contains an interview question index mapping **96 interview questions** to the relevant implementation, each with a difficulty level, a short interview-ready answer and the matching question in the PDF.
+The repository contains an interview question index mapping **96 interview questions** to the relevant implementation, each with a difficulty level, a short interview-ready answer and, for the Selenium and TestNG questions, the matching question in the PDF.
 
 See: [**docs/interview-index.md**](docs/interview-index.md)
+
+The interview index currently maps 96 questions to repository implementations (76 Selenium/TestNG questions and 20 Java coding questions); the PDF contains 104 Selenium and TestNG questions in total, including conceptual questions and topics that are intentionally explained without a dedicated implementation. The Java coding questions are in the index only.
 
 The repository also contains [**docs/interview-questions.pdf**](docs/interview-questions.pdf): 104 Selenium and TestNG interview questions with explanations, examples and links to the corresponding implementations.
 
@@ -710,7 +712,7 @@ The repository demonstrates:
 
 ## Normal Interview Suite
 
-The normal interview suite is designed to remain completely green.
+The normal suite is designed to run without intentional failures. Because it includes public practice sites, temporary external-site failures may still occur.
 
 | Run          | Tests | Passed | Failed | Skipped |
 | ------------ | ----: | -----: | -----: | ------: |
@@ -734,9 +736,11 @@ A separate `demo` group intentionally demonstrates different TestNG outcomes.
 
 | Run        | Tests | Passed |        Failed |       Skipped |
 | ---------- | ----: | -----: | ------------: | ------------: |
-| Demo suite |   152 | the 148 of the normal suite | 2 intentional | 2 intentional |
+| Demo suite |   152 |    147 | 2 intentional + 1 external-site | 2 intentional |
 
-The failed and skipped tests are intentional demonstrations of TestNG failure and skip behavior:
+Latest demo run (6 Oct 2026, headless Chrome, 11 min 59 s): 147 passed; the 2 failures and 2 skips of the `demo` group are intentional, and the 1 other failure was external (the practice site's infinite-scroll page added no content).
+
+The `demo` group's failed and skipped tests are intentional demonstrations of TestNG failure and skip behavior:
 
 * Assertion failure
 * Runtime failure
