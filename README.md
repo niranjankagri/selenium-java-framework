@@ -405,9 +405,7 @@ Level 5: Framework design
 
 ## 15. Future topics
 
-Next steps for the lab:
-
-- **The PDF** updated to link the new `interview/` examples.
+The lab covers the topics planned for it. Ideas for later: radio buttons and HTML5 drag and drop on a page that has them, and more OrangeHRM scenarios.
 
 Deliberately **out of scope** here (they belong in a separate production-style portfolio project): Docker, Selenium Grid, CI/CD, API testing and cloud execution.
 
