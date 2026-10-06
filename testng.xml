@@ -7,15 +7,20 @@
 	The "demo" group (ReportDemoTest: fails and skips on purpose) is left out,
 	as in Maven; run ReportDemoTest directly to see it.
 -->
+<!-- The suite name becomes the report title; test classes run in parallel on 3 threads, one browser each -->
 <suite name="OrangeHRM UI Suite" parallel="classes" thread-count="3">
 	<!-- Read by TestNgFeaturesTest.titleMatchesTheSuiteParameter (@Parameters) -->
 	<parameter name="expectedTitle" value="OrangeHRM" />
+	<!-- One <test> block holding every test class -->
 	<test name="OrangeHRM UI Tests">
+		<!-- Group filter for this <test> -->
 		<groups>
 			<run>
+				<!-- Leave out the demo tests (they fail and skip on purpose) -->
 				<exclude name="demo" />
 			</run>
 		</groups>
+		<!-- Run every test class in this package -->
 		<packages>
 			<package name="com.automation.selenium.tests" />
 		</packages>

@@ -9,17 +9,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<!-- POM format version; always 4.0.0 for Maven 3 -->
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- The project's coordinates: group (like a package), name and version -->
 	<groupId>com.automation</groupId>
 	<artifactId>selenium-java-framework</artifactId>
+	<!-- SNAPSHOT = work in progress, not a release -->
 	<version>0.0.1-SNAPSHOT</version>
+	<!-- Build output type (a jar; for a test project it is never published) -->
 	<packaging>jar</packaging>
 
+	<!-- Display name and description (shown by IDEs and Maven reports) -->
 	<name>selenium-java-framework</name>
 	<description>UI test automation framework built with Selenium WebDriver, TestNG and the Page Object Model</description>
 
+	<!-- Values used below as ${name}; each can be overridden on the command line with -Dname=value -->
 	<properties>
+		<!-- Read and write source files and reports as UTF-8 on every OS -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Compile for Java 17 (any newer JDK can build it) -->
@@ -30,6 +37,7 @@
 		<excludedGroups>demo</excludedGroups>
 	</properties>
 
+	<!-- Libraries the project needs; Maven downloads them (and what they need) from Maven Central -->
 	<dependencies>
 		<!-- Browser automation; Selenium Manager downloads the matching driver -->
 		<dependency>
@@ -51,6 +59,7 @@
 		</dependency>
 	</dependencies>
 
+	<!-- How the project is built and tested -->
 	<build>
 		<plugins>
 			<!-- Compiles for Java 17 (see maven.compiler.release) and reports deprecated API use -->
@@ -59,7 +68,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.16.0</version>
 				<configuration>
+					<!-- List every use of a deprecated API, not just a summary -->
 					<showDeprecation>true</showDeprecation>
+					<!-- Show compiler warnings -->
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
@@ -72,8 +83,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.6</version>
 				<configuration>
+					<!-- Each test class runs on its own thread; the methods of one class stay on one thread -->
 					<parallel>classes</parallel>
+					<!-- How many classes run at the same time (property above, or -Dthreads=N) -->
 					<threadCount>${threads}</threadCount>
+					<!-- Groups to leave out (property above; the demo profile changes it) -->
 					<excludedGroups>${excludedGroups}</excludedGroups>
 					<!-- Without it, a project path with spaces breaks the forked JVM's classpath -->
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -82,6 +96,7 @@
 		</plugins>
 	</build>
 
+	<!-- Optional settings switched on with -P<id> -->
 	<profiles>
 		<!--
 			mvn clean test -Pdemo also runs ReportDemoTest, whose tests fail and skip
@@ -89,6 +104,7 @@
 			Only the demo tests: mvn clean test -Pdemo -Dgroups=demo
 		-->
 		<profile>
+			<!-- The name used with -P -->
 			<id>demo</id>
 			<properties>
 				<!-- No real group is called "none", so nothing is left out -->

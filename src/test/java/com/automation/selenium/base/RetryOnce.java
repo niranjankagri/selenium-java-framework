@@ -1,6 +1,9 @@
+// Package of the shared test base classes
 package com.automation.selenium.base;
 
+// TestNG interface for deciding whether a failed test runs again
 import org.testng.IRetryAnalyzer;
+// The result of one test attempt (name, status, error)
 import org.testng.ITestResult;
 
 /**
@@ -11,6 +14,10 @@ import org.testng.ITestResult;
  * Attach it to one test with {@code @Test(retryAnalyzer = RetryOnce.class)}.
  * TestNG reports the failed attempt as skipped, so the report shows that a
  * retry happened.
+ * <p>
+ * To retry every test without touching each annotation, an
+ * {@code IAnnotationTransformer} could set this analyzer on all tests; that
+ * is left out on purpose, so real failures are not hidden.
  */
 public class RetryOnce implements IRetryAnalyzer {
 
@@ -28,12 +35,17 @@ public class RetryOnce implements IRetryAnalyzer {
 	 */
 	@Override
 	public boolean retry(ITestResult result) {
+		// Any retries left for this test?
 		if (retries < MAX_RETRIES) {
+			// Count this retry before running again
 			retries++;
+			// Print why the test is retried, e.g. "Retrying adminCanLogIn (1 of 1): java.lang.AssertionError: ..."
 			System.out.println("Retrying " + result.getName() + " (" + retries + " of " + MAX_RETRIES + "): "
 					+ result.getThrowable());
+			// true = TestNG runs the test again (the failed attempt is reported as skipped)
 			return true;
 		}
+		// No retries left: TestNG reports the failure as it is
 		return false;
 	}
 }
