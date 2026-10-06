@@ -309,8 +309,12 @@ public abstract class BasePage {
 		} catch (TimeoutException e) {
 			// The response came back before the spinner was shown
 		}
-		// Now wait (full timeout) until every spinner is gone; passes at once if there is none
-		wait.until(ExpectedConditions.invisibilityOfAllElements(loaders));
+		// Now wait (full timeout) until every spinner is gone; passes at once if there is none.
+		// Not ExpectedConditions.invisibilityOfAllElements(loaders): it calls size() and then get(i) on the
+		// list, and a PageFactory list proxy searches the page again on every call, so a spinner that
+		// vanishes between the two calls gives an IndexOutOfBoundsException. stream() searches once and
+		// checks that one snapshot; a spinner removed meanwhile throws Stale…, which this wait ignores.
+		wait.until(d -> loaders.stream().noneMatch(WebElement::isDisplayed));
 	}
 
 	/**
