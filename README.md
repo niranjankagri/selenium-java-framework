@@ -129,7 +129,7 @@ This separation keeps each example focused on the **interview concept being demo
 | Maven Surefire         | Test execution                |
 | Selenium Manager       | Browser driver management     |
 | Page Object Model      | Application automation        |
-| PageFactory            | Interview demonstration       |
+| PageFactory            | `@FindBy` fields in every page object |
 | ThreadLocal            | Parallel WebDriver management |
 | Custom TestNG Reporter | HTML reporting                |
 
@@ -453,7 +453,7 @@ For interview preparation, the interviewer should be able to immediately see the
 
 # PageFactory and @CacheLookup
 
-PageFactory is demonstrated because it is a commonly discussed Selenium interview topic.
+Every page object in `pages/` uses PageFactory for its fixed elements, and it is a commonly discussed Selenium interview topic.
 
 Example:
 
@@ -470,7 +470,7 @@ PageFactory.initElements(driver, this);
 
 PageFactory creates Selenium element proxies for fields declared with `@FindBy`.
 
-The underlying element lookup occurs when the field is used rather than storing the original `WebElement` reference immediately.
+The underlying element lookup occurs each time the field is used, rather than once when the page object is created. After a re-render, the next use finds the new element; a use that happens while the element is being replaced can still throw `StaleElementReferenceException`, which is why the explicit waits in `BasePage` ignore that exception and retry.
 
 ### Important interview point
 

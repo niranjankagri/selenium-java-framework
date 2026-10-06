@@ -43,10 +43,13 @@ import com.automation.selenium.config.Config;
  * <p>
  * Pages declare their fixed elements as {@link FindBy @FindBy} fields, which
  * the constructor fills with Selenium's {@link PageFactory}. Each field holds
- * a proxy that looks the element up again on every call, so an element the
- * page has re-rendered never goes stale. Locators built from a value (a field
- * label, a button text, a table cell) cannot be annotations and stay methods
- * that return a {@link By}.
+ * a proxy that looks the element up again on every call, so after a re-render
+ * the next call finds the new element. This does not rule out
+ * {@code StaleElementReferenceException}: a call that lands while the page is
+ * replacing the element can still throw it, which is why the waits below
+ * ignore it and simply try again. Locators built from a value (a field label,
+ * a button text, a table cell) cannot be annotations and stay methods that
+ * return a {@link By}.
  * <p>
  * Why explicit waits only: an explicit wait polls one condition (every
  * 500 ms by default) and continues as soon as it is true, so a test waits
