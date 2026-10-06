@@ -1,8 +1,21 @@
 # Selenium Java Interview Automation Lab
 
-> A hands-on collection of commonly asked Selenium WebDriver, TestNG and QA automation interview questions with executable Java implementations.
+A hands-on **Selenium WebDriver + Java + TestNG interview preparation repository** containing commonly asked QA automation interview questions with executable, commented Java implementations.
 
-This repository is an **interview preparation and learning reference**, not a production enterprise automation framework. Every concept that comes up in Selenium, Java, TestNG and SDET interviews is shown as working, commented code against a real web application (the [OrangeHRM open source demo](https://opensource-demo.orangehrmlive.com/web/index.php/auth/login)), with the short answer to give and the reason the approach is preferred.
+This repository is intentionally designed as an **Interview Automation Lab**, not as a production enterprise automation framework.
+
+Each topic follows a simple pattern:
+
+1. **Interview Question**
+2. **Interview-ready Answer**
+3. **Concept Explanation**
+4. **Working Java Implementation**
+5. **Common Mistake / Interview Trap**
+6. **Recommended Approach**
+
+The goal is to make it easy to understand an interview question, explain the concept clearly, and demonstrate the solution with working Selenium/TestNG code.
+
+> **Note:** A separate production-style QA automation portfolio project will cover broader areas such as API automation, CI/CD, Docker, cloud execution, and enterprise test architecture.
 
 **Have an interview tomorrow?** Open the [Interview Question Index](docs/interview-index.md), find your question, read the short answer, then open the linked code.
 
