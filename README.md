@@ -4,428 +4,1170 @@ A hands-on **Selenium WebDriver + Java + TestNG interview preparation repository
 
 This repository is intentionally designed as an **Interview Automation Lab**, not as a production enterprise automation framework.
 
-Each topic follows a simple pattern:
+The goal is simple:
 
-1. **Interview Question**
-2. **Interview-ready Answer**
-3. **Concept Explanation**
-4. **Working Java Implementation**
-5. **Common Mistake / Interview Trap**
-6. **Recommended Approach**
+> **Interview Question → Interview Answer → Concept → Working Code → Common Trap → Recommended Approach**
 
-The goal is to make it easy to understand an interview question, explain the concept clearly, and demonstrate the solution with working Selenium/TestNG code.
-
-> **Note:** A separate production-style QA automation portfolio project will cover broader areas such as API automation, CI/CD, Docker, cloud execution, and enterprise test architecture.
+Each topic is implemented with working Java/Selenium/TestNG code so that the repository can be used both as an interview preparation reference and as a practical coding example.
 
 **Have an interview tomorrow?** Open the [Interview Question Index](docs/interview-index.md), find your question, read the short answer, then open the linked code.
 
 ![HTML test report](docs/images/html-report.png)
 
-*The lab's own HTML report after a full run (`mvn clean test -Pdemo`, 6 Oct 2026): 112 tests, 107 passed. The demo tests fail twice and skip twice on purpose; the third failure is the practice site sending an error page into one frame (see [Reporting](#13-reporting)). Classes with a failure or skip come first and open.*
+---
 
-## Contents
+## Project Overview
 
-1. [Project overview](#1-project-overview)
-2. [Topics covered](#2-topics-covered)
-3. [Interview question index](#3-interview-question-index)
-4. [Architecture](#4-architecture)
-5. [Project structure](#5-project-structure)
-6. [Selenium interview examples](#6-selenium-interview-examples)
-7. [TestNG interview examples](#7-testng-interview-examples)
-8. [Framework design examples](#8-framework-design-examples)
-9. [Common interview traps](#9-common-interview-traps)
-10. [Interview-ready answers](#10-interview-ready-answers)
-11. [How to run](#11-how-to-run)
-12. [Test execution examples](#12-test-execution-examples)
-13. [Reporting](#13-reporting)
-14. [Learning path](#14-learning-path)
-15. [Future topics](#15-future-topics)
-16. [Author](#16-author)
+This repository demonstrates commonly asked concepts in:
 
-## 1. Project overview
+* Selenium WebDriver
+* Java automation
+* TestNG
+* UI test automation
+* Page Object Model
+* PageFactory
+* WebDriver synchronization
+* Selenium exceptions
+* Browser windows and tabs
+* Alerts and frames
+* Dropdowns and web tables
+* Actions API
+* JavaScriptExecutor
+* Cookies and file upload
+* TestNG DataProviders
+* TestNG listeners
+* Retry mechanisms
+* Parallel execution
+* ThreadLocal WebDriver
+* Test isolation and cleanup
+* Custom HTML reporting
+* Java coding questions (strings, arrays, collections, streams)
 
-| | |
-|---|---|
-| Language | Java 17 |
-| Browser automation | Selenium WebDriver 4.50 (Selenium Manager downloads the driver) |
-| Test runner | TestNG 7.12 |
-| Build | Maven (Surefire 3.5) |
-| Applications under test | [OrangeHRM open source demo](https://opensource-demo.orangehrmlive.com) (application tests, page objects) and [the-internet.herokuapp.com](https://the-internet.herokuapp.com) (one practice page per Selenium topic: alerts, frames, `<select>`, tables, uploads …) |
-| Report | Custom TestNG `IReporter`: one HTML file, no extra dependencies |
+Every interview-focused example is designed to answer three questions:
 
-**Repository philosophy.** Each topic tries to give you:
+1. **What is the interview question?**
+2. **How would I explain it in an interview?**
+3. **How would I implement it in Java?**
 
-1. the interview question,
-2. a short, interview-ready answer,
-3. the concept and *why* the approach is used,
-4. a working Java implementation you can run,
-5. the common mistake and the better approach.
+---
 
-Every interview class starts with the **interview question, the interview-ready answer, the concept and the recommended approach** in its Javadoc, and every line of code is commented. Next to the code there are three pages: [common interview traps](docs/common-interview-traps.md), [avoid vs prefer](docs/avoid-vs-prefer.md) (bad code next to the better version) and 104 questions with long answers in [`docs/interview-questions.pdf`](docs/interview-questions.pdf).
+# Repository Philosophy
 
-## 2. Topics covered
+This project is deliberately different from a production automation framework.
 
-Levels: 🟢 Beginner · 🟡 Intermediate · 🔴 Advanced · ⭐ Frequently asked
+The primary objective is **interview preparation and technical demonstration**.
 
-| Area | Covered with working code |
-|---|---|
-| **WebDriver basics** 🟢 | `close()` vs `quit()` · `findElement` vs `findElements` · navigation (back, refresh) · headless and browser options · Selenium Manager |
-| **Locators** 🟢🟡 | All eight `By` strategies · CSS vs XPath and XPath axes · relative locators · dynamic locators built from a value · labels not linked to inputs · `@FindBy` forms |
-| **Synchronization** 🟢🟡 | Why not `Thread.sleep` · implicit wait (and why not) · explicit waits · presence vs visibility · `ExpectedConditions` · FluentWait · custom conditions · spinners and AJAX |
-| **Exceptions** 🟢🟡 | Reproduced and handled: `NoSuchElement`, `StaleElementReference`, `ElementNotInteractable`, `ElementClickIntercepted`, `Timeout`, `NoSuchWindow`, `NoSuchFrame`, `InvalidSelector`, `NoAlertPresent`, `UnhandledAlert` |
-| **Alerts, frames, windows** 🟢 | Alert, confirm and prompt · nested frames, `parentFrame`, `defaultContent`, iframe by element · new window by handle set difference or by title · new tab |
-| **Elements** 🟢🟡 | Native `<select>` · custom drop-downs · checkboxes · web tables (rows as maps, totals, `.//` inside a row) · text vs attribute vs property · `clear()` on Vue/React fields |
-| **Advanced interactions** 🟡 | `Actions` (hover, right-click, key combinations, slider) · `JavascriptExecutor` (arguments, return types, scrolling, the JS-click risk) · page and element screenshots · cookies (skip the login) · file upload · broken links |
-| **Framework design** 🟡🔴 | Page Object Model · PageFactory and `@CacheLookup` · `BasePage` · fluent page API · `ThreadLocal` driver (two threads, two sessions) · driver life cycle · configuration with `-D` overrides · test data · test isolation and cleanup · step logging |
-| **TestNG** 🟢🟡🔴 | Annotation order · `alwaysRun` · groups · `priority` · `dependsOnMethods` / `dependsOnGroups` · `enabled` · `invocationCount` · `threadPoolSize` · `timeOut` · `SoftAssert` · `SkipException` · `expectedExceptions` · `@DataProvider` (shared, Iterator, Method-aware, parallel) · `@Parameters` + `@Optional` · parallel classes · `ITestListener` · `IReporter` · `IRetryAnalyzer` |
-| **Build and reporting** 🟢🔴 | Maven Surefire with groups and profiles · screenshot on failure · custom HTML report |
+Each interview topic should provide:
 
-Explained but not run as code: radio buttons and HTML5 drag and drop (see the end of the [index](docs/interview-index.md#12-not-covered-by-code)).
+1. Interview question
+2. Short interview-ready answer
+3. Concept explanation
+4. Working Java implementation
+5. Common mistake or interview trap
+6. Recommended approach
 
-## 3. Interview question index
+The code is intentionally commented and self-contained where appropriate so that the Selenium/TestNG API being discussed is easy to identify. Every interview class starts with the question, the interview answer, the concept and the recommended approach in its Javadoc, and every line of code is commented.
 
-[**docs/interview-index.md**](docs/interview-index.md) maps **76 interview questions** to the exact class and method that answers them, with a short interview answer, a difficulty level and the matching question in the PDF. A sample:
+---
 
-| Question | Level | Implementation |
-|---|---|---|
-| How do you make WebDriver safe for parallel runs? | 🔴 ⭐ | [`DriverManager`](src/main/java/com/automation/selenium/driver/DriverManager.java) |
-| Why avoid `Thread.sleep()`? Implicit or explicit wait? | 🟢 ⭐ | [`BasePage`](src/main/java/com/automation/selenium/pages/BasePage.java) |
-| How do you handle `StaleElementReferenceException`? | 🟡 ⭐ | [`SeleniumExceptionsTest`](src/test/java/com/automation/selenium/interview/exceptions/SeleniumExceptionsTest.java) |
-| How do you handle alerts and iframes? | 🟢 ⭐ | [`AlertHandlingTest`](src/test/java/com/automation/selenium/interview/alerts/AlertHandlingTest.java), [`IframeHandlingTest`](src/test/java/com/automation/selenium/interview/frames/IframeHandlingTest.java) |
-| What is the difference between implicit, explicit and fluent waits? | 🟡 ⭐ | [`interview/synchronization/`](src/test/java/com/automation/selenium/interview/synchronization) |
-| What is PageFactory? Is it the same as POM? | 🟡 ⭐ | [`BasePage`](src/main/java/com/automation/selenium/pages/BasePage.java), [`LoginPage`](src/main/java/com/automation/selenium/pages/LoginPage.java) |
-| How do you handle multiple windows? | 🟢 ⭐ | [`MultipleWindowTest`](src/test/java/com/automation/selenium/interview/windows/MultipleWindowTest.java) |
-| How do you handle a custom drop-down? | 🟡 ⭐ | `BasePage.choose` / `options` |
-| How does a DataProvider work? | 🟡 ⭐ | [`TestData`](src/test/java/com/automation/selenium/data/TestData.java), `LoginTest` |
-| How does a RetryAnalyzer work? Should it retry everything? | 🔴 ⭐ | [`RetryOnce`](src/test/java/com/automation/selenium/base/RetryOnce.java) |
-| How do you take a screenshot on failure? | 🟡 ⭐ | [`BaseTest`](src/test/java/com/automation/selenium/base/BaseTest.java) |
-| How do you find broken links? | 🟡 ⭐ | [`Links`](src/main/java/com/automation/selenium/utils/Links.java), `SeleniumScenariosTest` |
+# Application Strategy
 
-## 4. Architecture
+This repository intentionally uses two public demo applications because no single application provides every Selenium interview scenario.
 
+## 1. OrangeHRM
+
+**Purpose:** Realistic application automation and framework examples ([opensource-demo.orangehrmlive.com](https://opensource-demo.orangehrmlive.com)).
+
+Used for:
+
+* Login/logout
+* Admin user management
+* Employee lifecycle
+* Search and filtering
+* Form validation
+* Custom dropdowns
+* Toasts and messages
+* Page Object Model
+* PageFactory
+* Test data
+* Test isolation
+* Cleanup
+* Parallel execution
+
+OrangeHRM is used where a realistic application flow makes the interview concept easier to demonstrate.
+
+## 2. The Internet
+
+**Purpose:** Focused Selenium WebDriver exercises ([the-internet.herokuapp.com](https://the-internet.herokuapp.com)).
+
+Used for Selenium-specific scenarios that are not naturally available in OrangeHRM:
+
+* JavaScript alerts
+* Frames / iframes
+* Browser windows and tabs
+* Native `<select>` dropdowns
+* Checkboxes
+* Web tables
+* File upload
+* Cookies
+* Dynamic loading (waits and Selenium exceptions)
+* Actions API
+* Other isolated WebDriver exercises
+
+This separation keeps each example focused on the **interview concept being demonstrated**.
+
+---
+
+# Tech Stack
+
+| Technology             | Version / Usage               |
+| ---------------------- | ----------------------------- |
+| Java                   | 17+                           |
+| Selenium WebDriver     | 4.50                          |
+| TestNG                 | 7.12                          |
+| Maven                  | Build / dependency management |
+| Maven Surefire         | Test execution                |
+| Selenium Manager       | Browser driver management     |
+| Page Object Model      | Application automation        |
+| PageFactory            | Interview demonstration       |
+| ThreadLocal            | Parallel WebDriver management |
+| Custom TestNG Reporter | HTML reporting                |
+
+---
+
+# Topics Covered
+
+## Selenium WebDriver
+
+* WebDriver basics
+* `close()` vs `quit()`
+* `findElement()` vs `findElements()`
+* Browser navigation
+* Browser options
+* Headless execution
+* Selenium Manager
+
+## Locators
+
+* ID
+* Name
+* Class Name
+* Tag Name
+* Link Text
+* Partial Link Text
+* CSS Selector
+* XPath
+* XPath axes
+* Relative locators
+* Dynamic locators
+* Label-based locators
+* `@FindBy`
+
+## Synchronization
+
+* Why `Thread.sleep()` should normally be avoided
+* Implicit wait
+* Explicit wait
+* FluentWait
+* Presence vs visibility
+* `ExpectedConditions`
+* Custom wait conditions
+* AJAX
+* Loading spinners
+* Dynamic DOM updates
+
+## Selenium Exceptions
+
+* `NoSuchElementException`
+* `StaleElementReferenceException`
+* `ElementNotInteractableException`
+* `ElementClickInterceptedException`
+* `TimeoutException`
+* `NoSuchWindowException`
+* `NoSuchFrameException`
+* `InvalidSelectorException`
+* `NoAlertPresentException`
+* `UnhandledAlertException`
+
+## Alerts
+
+* Alert
+* Confirm
+* Prompt
+* Accept
+* Dismiss
+* Read alert text
+* Send text to prompt
+
+## Frames / iFrames
+
+* Switch to frame
+* Switch by index
+* Switch by name/id
+* Switch by WebElement
+* Nested frames
+* `parentFrame()`
+* `defaultContent()`
+
+## Windows and Tabs
+
+* Window handles
+* Switching windows
+* Switching by title
+* Opening a new tab
+* Returning to the original window
+
+## Elements
+
+* Native dropdowns
+* Custom dropdowns
+* Checkboxes
+* Radio buttons (explained in `CheckboxTest`; the practice site has none to run against)
+* Web tables
+* Text vs attribute vs property
+* Dynamic form fields
+
+## Advanced Interactions
+
+* Hover
+* Right click
+* Keyboard combinations
+* Slider
+* Drag and drop (explained only; see the [index](docs/interview-index.md#13-not-covered-by-code))
+* `Actions` API
+
+## JavaScriptExecutor
+
+* JavaScript click (and why it can hide real problems)
+* Scroll
+* Set value
+* Read page information
+* Execute JavaScript against elements
+
+## Browser Features
+
+* Cookies
+* File upload
+* Screenshots
+* Element screenshots
+* Broken links
+
+## Framework Design
+
+* Page Object Model
+* PageFactory
+* BasePage
+* Explicit waits
+* Fluent page methods
+* ThreadLocal WebDriver
+* Driver lifecycle
+* Configuration overrides
+* Test data
+* Test isolation
+* Cleanup
+* Step logging
+* Custom HTML reporting
+
+## TestNG
+
+* Annotation lifecycle
+* `@BeforeMethod`
+* `@AfterMethod`
+* `alwaysRun`
+* Groups
+* Priority
+* Dependencies
+* `dependsOnMethods`
+* `dependsOnGroups`
+* `enabled`
+* `invocationCount`
+* `threadPoolSize`
+* Timeout
+* SoftAssert
+* SkipException
+* expectedExceptions
+* DataProviders
+* Iterator DataProvider
+* Method-aware DataProvider
+* Parallel DataProvider
+* Parameters
+* Optional parameters
+* Parallel classes
+* ITestListener
+* IReporter
+* IRetryAnalyzer
+
+## Java Coding
+
+* Strings: reverse, palindrome, anagram, character frequency, duplicates, first non-repeating character, words
+* Arrays: duplicates, second-highest, missing number, max/min, sorting, intersection
+* Numbers: Fibonacci, prime check, swap without a third variable
+* Collections and streams: removing duplicates in order, word frequency with `groupingBy`
+
+---
+
+# Interview Question Index
+
+The repository contains an interview question index mapping **96 interview questions** to the relevant implementation, each with a difficulty level, a short interview-ready answer and the matching question in the PDF.
+
+See: [**docs/interview-index.md**](docs/interview-index.md)
+
+The repository also contains [**docs/interview-questions.pdf**](docs/interview-questions.pdf): 104 Selenium and TestNG interview questions with explanations, examples and links to the corresponding implementations.
+
+---
+
+# Architecture
+
+The framework examples follow this general structure:
+
+```text
+Test Classes
+     │
+     ▼
+ BaseTest
+     │
+     ▼
+ Page Objects
+     │
+     ▼
+ BasePage / AppPage
+     │
+     ├── DriverManager
+     ├── Config
+     ├── Steps
+     └── Reporting
 ```
-  Test classes (tests/)            what to check: assertions only, no locators
-        │ extend
-  BaseTest (base/)                 browser per test · screenshot on failure · cleanUp() hook
-        │ call
-  Page objects (pages/)            LoginPage, DashboardPage, SystemUsersPage, … : locators + actions
-        │ extend
-  AppPage → BasePage               menu/user menu · PageFactory, explicit waits, shared widgets
-        │ use
-  DriverManager · Config · Steps   ThreadLocal browser · settings · report steps
-        │
-  HtmlReportListener               TestNG IReporter → one HTML report
+
+For parallel execution:
+
+```text
+TestNG
+  │
+  ├── Thread 1 → WebDriver 1 → Test 1
+  │
+  ├── Thread 2 → WebDriver 2 → Test 2
+  │
+  └── Thread 3 → WebDriver 3 → Test 3
 ```
 
-**Parallel execution with `ThreadLocal`.** Surefire runs test classes on 3 threads. `DriverManager` keeps one browser per thread, so parallel tests never touch each other's browser:
+Each thread owns its own WebDriver instance through `ThreadLocal`. [`ThreadLocalDriverTest`](src/test/java/com/automation/selenium/interview/framework/ThreadLocalDriverTest.java) shows it with two threads and two browser sessions.
 
-```
-Thread 1 ── LoginTest        ── ChromeDriver 1
-Thread 2 ── SystemUsersTest  ── ChromeDriver 2
-Thread 3 ── EmployeeTest     ── ChromeDriver 3
-```
+---
 
-[`ThreadLocalDriverTest`](src/test/java/com/automation/selenium/interview/framework/ThreadLocalDriverTest.java) proves it with two threads and two browser sessions; [`ParallelExecutionTest`](src/test/java/com/automation/selenium/interview/testng/ParallelExecutionTest.java) shows the same idea with TestNG's `threadPoolSize`.
+# Project Structure
 
-## 5. Project structure
-
-```
+```text
 selenium-java-framework
-├── docs/interview-index.md            76 questions → short answer → implementation, with difficulty levels
-├── docs/common-interview-traps.md     Trick questions: the short answer and where the lab shows it
-├── docs/avoid-vs-prefer.md            Common mistakes next to the better code, with the reason
-├── docs/interview-questions.pdf       104 Selenium + TestNG questions: explanation, example, link to the code
-├── docs/images/                       Report screenshots used in this README
-├── pom.xml                            Maven build: Surefire parallel classes, groups, demo profile
-├── testng.xml                         Suite for running from the IDE
-└── src
-    ├── main/java/com/automation/selenium
-    │   ├── config      Config: config.properties + -D overrides
-    │   ├── driver      DriverManager: ThreadLocal browser per thread (chrome / firefox / edge, headless)
-    │   ├── pages       BasePage (PageFactory, explicit waits, shared widgets), AppPage (menus),
-    │   │               LoginPage, DashboardPage, SystemUsersPage,
-    │   │               EmployeeListPage, AddEmployeePage, EmployeeProfilePage
-    │   ├── report      HtmlReportListener: custom IReporter
-    │   └── utils       Steps: report steps; Links: HTTP status of a link
-    ├── main/resources/META-INF/services   Registers the report listener with TestNG (ServiceLoader)
-    ├── test/java/com/automation/selenium
-    │   ├── base        BaseTest: browser life cycle, screenshot, cleanup; RetryOnce: IRetryAnalyzer
-    │   ├── data        TestData: data providers, generated employees
-    │   ├── interview   One package per interview topic (the lab):
-    │   │   ├── PracticeSiteTest      base for the practice-site examples (open a page, explicit waits)
-    │   │   ├── locators              LocatorStrategiesTest
-    │   │   ├── synchronization       ImplicitWaitTest, ExplicitWaitTest, FluentWaitTest
-    │   │   ├── exceptions            SeleniumExceptionsTest
-    │   │   ├── alerts                AlertHandlingTest
-    │   │   ├── frames                IframeHandlingTest
-    │   │   ├── windows               MultipleWindowTest
-    │   │   ├── dropdowns             SelectDropdownTest
-    │   │   ├── elements              CheckboxTest, WebTableTest
-    │   │   ├── actions               ActionsClassTest
-    │   │   ├── javascript            JavaScriptExecutorTest
-    │   │   ├── cookies               CookieTest
-    │   │   ├── upload                FileUploadTest
-    │   │   ├── testng                AnnotationOrderTest, ListenerTest (+ TestEventsListener),
-    │   │   │                         DataProviderVariantsTest, ParallelExecutionTest, DependencyTest
-    │   │   └── framework             ThreadLocalDriverTest, ConfigOverrideTest
-    │   └── tests       LoginTest, SystemUsersTest, EmployeeTest        (application tests on OrangeHRM)
-    │                   SeleniumScenariosTest, TestNgFeaturesTest       (interview scenarios on OrangeHRM)
-    │                   ReportDemoTest                                  (fails and skips on purpose)
-    └── test/resources/config.properties
+│
+├── docs/
+│   ├── images/
+│   ├── interview-index.md
+│   ├── common-interview-traps.md
+│   ├── avoid-vs-prefer.md
+│   └── interview-questions.pdf
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/automation/selenium/
+│   │   │       ├── config/
+│   │   │       ├── driver/
+│   │   │       ├── pages/
+│   │   │       ├── report/
+│   │   │       └── utils/
+│   │   │
+│   │   └── resources/
+│   │       └── META-INF/services/
+│   │
+│   └── test/
+│       ├── java/
+│       │   └── com/automation/selenium/
+│       │       ├── base/
+│       │       ├── data/
+│       │       ├── interview/      one package per topic: locators, synchronization, exceptions,
+│       │       │                   alerts, frames, windows, dropdowns, elements, actions,
+│       │       │                   javascript, cookies, upload, testng, framework, java
+│       │       └── tests/
+│       │
+│       └── resources/
+│           └── config.properties
+│
+├── pom.xml
+├── testng.xml
+└── README.md
 ```
 
-**Two styles on purpose.** The `tests/` classes are built like a real suite: page objects hold every locator, and tests only call page methods and assert. The `interview/` examples call the Selenium API directly, with their locators as constants at the top, because there the API call *is* the interview topic (how do you switch to a frame?). Each `interview/` class can be read on its own.
+---
 
-**Practice site.** OrangeHRM has no alerts, frames, `<select>` elements or checkboxes, so those examples run on [the-internet.herokuapp.com](https://the-internet.herokuapp.com). It is a free Heroku app that sometimes sends an error page, or a page whose scripts did not load; `PracticeSiteTest.open()` detects that and loads the page again (up to three times), writing each reload into the report.
+# Two Styles Used in This Repository
 
-## 6. Selenium interview examples
+The repository intentionally contains two different styles.
 
-**One class per topic** in [`interview/`](src/test/java/com/automation/selenium/interview). Each class Javadoc starts with the interview question and the answer to give, then the concept and the recommended approach; each test shows one technique. Run a topic with its group, e.g. `-Dgroups=frames`.
+## `tests/`
 
-| Topic (group) | Level | Class | What it shows |
-|---|---|---|---|
-| Locators (`locators`) | 🟢🟡 ⭐ | `LocatorStrategiesTest` | All eight `By` strategies · XPath axes · relative locators · a dynamic locator built from a value |
-| Waits (`synchronization`) | 🟢🟡 ⭐ | `ImplicitWaitTest`, `ExplicitWaitTest`, `FluentWaitTest` | No wait vs implicit wait · presence vs visibility · loading indicator · enabled input · FluentWait · custom condition |
-| Exceptions (`exceptions`) | 🟢🟡 ⭐ | `SeleniumExceptionsTest` | Ten exceptions reproduced on purpose, each with its cause, fix and the workaround to avoid |
-| Alerts (`alerts`) | 🟢 ⭐ | `AlertHandlingTest` | Alert · confirm (OK and Cancel) · prompt |
-| Frames (`frames`) | 🟢 ⭐ | `IframeHandlingTest` | Nested frames by name · `parentFrame` · `defaultContent` · by index · iframe by `WebElement` |
-| Windows (`windows`) | 🟢 ⭐ | `MultipleWindowTest` | New window by handle set difference · by title · close and switch back |
-| Drop-downs (`dropdowns`) | 🟢 ⭐ | `SelectDropdownTest` | `Select` by text, value and index · options · a disabled option refused |
-| Elements (`elements`) | 🟢🟡 ⭐ | `CheckboxTest`, `WebTableTest` | Set a checkbox state safely · table rows as maps · totals · columns by class · `.//` inside a row |
-| Actions (`actions`) | 🟡 | `ActionsClassTest` | Hover · right-click · Shift + key · slider with arrow keys |
-| JavaScript (`javascript`) | 🟡 ⭐ | `JavaScriptExecutorTest` | Arguments and return types · scrolling · why a JavaScript click hides bugs |
-| Cookies (`cookies`) | 🟡 | `CookieTest` | Add, read, delete · log out by deleting the session cookie · skip the login with a saved cookie |
-| Upload (`upload`) | 🟢 ⭐ | `FileUploadTest` | `sendKeys` the absolute path to the file input |
+These represent realistic automation-suite design.
 
-**Coding scenarios on OrangeHRM.** [`SeleniumScenariosTest`](src/test/java/com/automation/selenium/tests/SeleniumScenariosTest.java) solves one classic "can you code this?" task per test, through the page objects:
+They use:
 
-| Interview task | Level | Where |
-|---|---|---|
-| Read a list of elements (`findElements`) | 🟢 ⭐ | `sideMenuListsTheCoreModules` · `AppPage.menuItems` |
-| Find broken links | 🟡 ⭐ | `sideMenuHasNoBrokenLinks` · `Links` |
-| Read the options of a custom (non-`<select>`) drop-down | 🟡 ⭐ | `userRoleDropdownOffersAdminAndEss` · `BasePage.options` |
-| Keyboard actions with `Actions` (Tab, Enter) | 🟡 | `adminCanLogInWithTheKeyboard` · `LoginPage.loginWithKeyboard` |
-| Open a new tab, switch, close, switch back | 🟢 ⭐ | `dashboardOpensInASecondTab` |
-| `JavascriptExecutor` | 🟡 ⭐ | `javascriptReadsThePageState` · `BasePage.runScript` |
-| Stale element: `@FindBy` vs `@CacheLookup` after a reload | 🟡 ⭐ | `findByFieldSurvivesAReloadButCacheLookupGoesStale` |
-| Element screenshot (Selenium 4) | 🟢 | `loginFormScreenshotIsAPng` · `LoginPage.formScreenshot` |
+* Page Object Model
+* BaseTest
+* Page methods
+* Reusable utilities
+* Test data
+* Assertions
 
-The page objects add more: labels not linked to inputs (`BasePage.inField`), spinner waits (`BasePage.waitForLoader`), tables as *column → value* (`BasePage.tableRows`), and `clear()` on a Vue field (`BasePage.type`).
+Tests should primarily describe **business behavior**, not low-level Selenium implementation.
 
-## 7. TestNG interview examples
+Example:
 
-[`TestNgFeaturesTest`](src/test/java/com/automation/selenium/tests/TestNgFeaturesTest.java) uses one TestNG feature per test on a real OrangeHRM check. The classes in [`interview/testng/`](src/test/java/com/automation/selenium/interview/testng) need no browser and run in about two seconds (`-Dgroups=testng`).
+```java
+loginPage.loginAsAdmin()
+         .openAdmin()
+         .filterByUsername("Admin")
+         .search();
+```
 
-| Feature | Level | Where |
-|---|---|---|
-| Annotation order: `@BeforeSuite` … `@AfterSuite` (recorded and checked) | 🟢 ⭐ | `AnnotationOrderTest` |
-| `@BeforeMethod` / `@AfterMethod` with `alwaysRun` | 🟢 ⭐ | `BaseTest`, `AnnotationOrderTest` |
-| Groups (class level + `smoke`), `excludedGroups` | 🟢 ⭐ | `LoginTest`, `SystemUsersTest`, `EmployeeTest`, `pom.xml` |
-| `SoftAssert` | 🟢 ⭐ | `softAssertChecksTheLoginPage` |
-| `expectedExceptions` + message regex | 🟡 | `wrongPasswordThrowsTheLoginError` |
-| `priority` + `dependsOnMethods` | 🟢 ⭐ | `loginPageIsShown` → `adminLogsInAfterThePageCheck` |
-| `dependsOnGroups`, `enabled = false` | 🟡 | `DependencyTest` |
-| `invocationCount` | 🟢 | `wrongPasswordIsRejectedEveryTime` |
-| `timeOut` | 🟡 | `loginFinishesWithinOneMinute` |
-| `IRetryAnalyzer` | 🔴 ⭐ | `adminLoginIsRetriedOnceOnFailure` · `RetryOnce` |
-| `@Parameters` + `@Optional` | 🟡 | `titleMatchesTheSuiteParameter` · `testng.xml` |
-| `@DataProvider` shared through `dataProviderClass` | 🟡 ⭐ | `LoginTest.loginIsRejectedForInvalidCredentials` · `TestData` |
-| `@DataProvider` as a lazy `Iterator`, `Method`-aware, `parallel = true` | 🔴 | `DataProviderVariantsTest` |
-| `SkipException`; skip caused by a failed dependency | 🟢 | `ReportDemoTest` |
-| Parallel classes; `invocationCount` + `threadPoolSize` with a `ThreadLocal` | 🔴 ⭐ | `pom.xml` (Surefire), `testng.xml` · `ParallelExecutionTest` |
-| `ITestListener` registered with `@Listeners` | 🔴 | `ListenerTest` + `TestEventsListener` |
-| `IReporter` registered through ServiceLoader | 🔴 | `HtmlReportListener`, `META-INF/services` |
+## `interview/`
 
-## 8. Framework design examples
+These examples are intentionally more direct.
 
-- **Page Object Model.** Page objects hold every locator and action; tests only call methods such as `loginAsAdmin().openAdmin().filterByUsername("Admin").search()` and assert on the results.
-- **PageFactory.** Fixed elements are `@FindBy` fields, filled by `PageFactory.initElements(driver, this)` in the `BasePage` constructor:
+The Selenium API call being discussed is usually visible directly in the test class.
 
-  ```java
-  @FindBy(name = "username")
-  private WebElement usernameField;
-  @FindBy(css = ".oxd-alert-content-text")
-  private List<WebElement> errorAlerts;   // empty list = no banner
-  ```
+For example:
 
-  Each field is a proxy that finds the element again on every use, so it never goes stale when the page re-renders. `@CacheLookup` is left out on purpose; `SeleniumScenariosTest` shows why. Locators built from a value (a label, a button text, a row ID) cannot be annotations and stay methods that return a `By`.
-- **Explicit waits only.** `BasePage` wraps each action in an explicit wait that ignores stale elements, and waits for the loading spinner after searches.
-- **`ThreadLocal` driver and life cycle.** `DriverManager` keeps one `WebDriver` per thread; `BaseTest` starts a fresh browser before each test and always quits it afterwards. [`ThreadLocalDriverTest`](src/test/java/com/automation/selenium/interview/framework/ThreadLocalDriverTest.java) starts browsers on two threads and checks they get two sessions, and that `quit()` empties the slot.
-- **Configuration.** `config.properties`, overridable with `-Dkey=value` (see [How to run](#11-how-to-run)); [`ConfigOverrideTest`](src/test/java/com/automation/selenium/interview/framework/ConfigOverrideTest.java) shows the override and the fail-fast message for a missing setting.
-- **Test isolation on a shared site.** Checks never depend on how many records exist. The PIM test creates its own employee with a random ID and deletes it again; if the test fails halfway, `BaseTest` takes the screenshot, then calls the `cleanUp()` hook, which `EmployeeTest` overrides to delete the leftover.
-- **Step logging.** Page methods record each action with `Steps.log` (passwords masked), and the report shows the steps under each test.
+```java
+driver.switchTo().alert().accept();
+```
 
-## 9. Common interview traps
+or:
 
-The full page, with about 30 traps grouped by topic and a link to the code for each, is [**docs/common-interview-traps.md**](docs/common-interview-traps.md). A few of them:
+```java
+driver.switchTo().frame(frameElement);
+```
 
-| Trap question | Short answer |
-|---|---|
-| Can we use `Thread.sleep()`? | Technically yes, but not for synchronization: it always waits the full time. Use an explicit wait for the condition you need. |
-| Is PageFactory required for Page Object Model? | No. POM is a design pattern; PageFactory is one optional way to create a page's elements. |
-| Does `ThreadLocal` make WebDriver thread-safe? | Not strictly. It gives each thread its *own* driver, so no two threads share one, which is what parallel tests need. |
-| Should a RetryAnalyzer retry every failure? | No. Retry only known environment hiccups; retrying everything hides real defects. |
-| Is `@CacheLookup` always bad? | No. It is fine for truly static elements, but goes stale when the element is re-created (reload, re-render). |
-| Does `dependsOnMethods` fail the dependent test? | No. If the first test fails, the dependent test is **skipped**. |
-| Does `-Dgroups=smoke` work when Surefire uses testng.xml? | No. Surefire ignores `-Dgroups` and `-Dtest` when `suiteXmlFiles` is set, which is why this project runs without a suite file. |
-| Will `@BeforeMethod` run when I filter by group? | Only if it is in that group or has `alwaysRun = true`. |
-| After a link opens a new window, does Selenium switch to it? | No. The driver stays on the old window until `switchTo().window(handle)`. |
-| The click is intercepted: use a JavaScript click? | No. Something covers the element; a JavaScript click hides the real problem. Wait for the overlay to go. |
-| Inside `row.findElement(By.xpath("//td"))`, which cell do you get? | The first cell of the whole page. Use `.//td` to stay in the row. |
+This is intentional.
 
-## 10. Interview-ready answers
+For interview preparation, the interviewer should be able to immediately see the Selenium API being demonstrated.
 
-**Q: What is the difference between implicit and explicit wait?**
-Implicit wait applies to every element lookup of the driver; explicit wait waits for one condition on one element. Explicit waits give precise synchronization and clear errors, and the two should not be mixed. → [`interview/synchronization/`](src/test/java/com/automation/selenium/interview/synchronization), [`BasePage`](src/main/java/com/automation/selenium/pages/BasePage.java)
+---
 
-**Q: How do you run Selenium tests in parallel safely?**
-Give every test thread its own browser by keeping the driver in a `ThreadLocal<WebDriver>`, start and quit it per test, and keep test data independent. → [`DriverManager`](src/main/java/com/automation/selenium/driver/DriverManager.java), [`BaseTest`](src/test/java/com/automation/selenium/base/BaseTest.java)
+# PageFactory and @CacheLookup
 
-**Q: How do you handle a stale element?**
-Find the element again instead of reusing the old reference. In this lab, PageFactory proxies re-find on every use and the wait ignores `StaleElementReferenceException`, so a re-render is simply retried. → [`SeleniumExceptionsTest`](src/test/java/com/automation/selenium/interview/exceptions/SeleniumExceptionsTest.java)`.staleElementReferenceException`, `SeleniumScenariosTest.findByFieldSurvivesAReloadButCacheLookupGoesStale`
+PageFactory is demonstrated because it is a commonly discussed Selenium interview topic.
 
-**Q: How do you handle a JavaScript alert or an iframe?**
-An alert is a browser dialog: wait with `alertIsPresent()`, then `accept()`, `dismiss()` or `sendKeys()`. A frame is a separate document: switch into it (by name, index or element), and back with `defaultContent()`. → [`AlertHandlingTest`](src/test/java/com/automation/selenium/interview/alerts/AlertHandlingTest.java), [`IframeHandlingTest`](src/test/java/com/automation/selenium/interview/frames/IframeHandlingTest.java)
+Example:
 
-**Q: What is the Page Object Model, and why use it?**
-One class per page holds its locators and actions; tests call methods and assert. A UI change is fixed in one place, and tests read like the business flow. → [`pages/`](src/main/java/com/automation/selenium/pages)
+```java
+@FindBy(name = "username")
+private WebElement usernameField;
+```
 
-**Q: How does a DataProvider work?**
-A method annotated `@DataProvider` returns `Object[][]`; TestNG runs the test once per row and passes the row as parameters. → [`TestData`](src/test/java/com/automation/selenium/data/TestData.java), `LoginTest.loginIsRejectedForInvalidCredentials`
+and:
 
-All 76 answers are in the [index](docs/interview-index.md); the trick questions are on the [common interview traps](docs/common-interview-traps.md) page, and common mistakes with the better code are on [avoid vs prefer](docs/avoid-vs-prefer.md).
+```java
+PageFactory.initElements(driver, this);
+```
 
-## 11. How to run
+PageFactory creates Selenium element proxies for fields declared with `@FindBy`.
 
-Requirements: JDK 17 or newer, Maven, and Chrome (or Firefox/Edge).
+The underlying element lookup occurs when the field is used rather than storing the original `WebElement` reference immediately.
+
+### Important interview point
+
+PageFactory does **not** eliminate stale-element problems.
+
+The DOM element can still become stale after:
+
+* Page refresh
+* Navigation
+* DOM replacement
+* AJAX re-rendering
+* React/Vue/Angular updates
+
+### @CacheLookup
+
+`@CacheLookup` caches the located element reference.
+
+It may improve performance for genuinely static elements, but it can cause stale-element problems when the DOM changes.
+
+This repository intentionally demonstrates:
+
+```text
+@FindBy
+vs
+@FindBy + @CacheLookup
+```
+
+so that the difference can be explained during an interview ([`SeleniumScenariosTest.findByFieldSurvivesAReloadButCacheLookupGoesStale`](src/test/java/com/automation/selenium/tests/SeleniumScenariosTest.java)).
+
+### Interview answer
+
+> PageFactory provides element proxies and can defer element lookup, but it does not eliminate stale-element exceptions. I avoid `@CacheLookup` for dynamic applications unless I know the DOM reference remains stable.
+
+---
+
+# Common Interview Traps
+
+See: [**docs/common-interview-traps.md**](docs/common-interview-traps.md) (about 30 traps) and [**docs/avoid-vs-prefer.md**](docs/avoid-vs-prefer.md) (26 mistakes next to the better code).
+
+Important examples include:
+
+### Thread.sleep
+
+**Avoid:**
+
+```java
+Thread.sleep(5000);
+```
+
+**Prefer:**
+
+```java
+wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+```
+
+### PageFactory
+
+**Wrong assumption:**
+
+> PageFactory means elements can never become stale.
+
+**Correct:**
+
+PageFactory does not eliminate stale elements. `@CacheLookup` can make stale-element problems more likely on dynamic pages.
+
+### ThreadLocal
+
+**Wrong assumption:**
+
+> ThreadLocal makes Selenium WebDriver thread-safe.
+
+**Correct:**
+
+ThreadLocal provides a separate WebDriver reference for each thread. The important benefit is preventing multiple parallel tests from sharing the same driver instance.
+
+### RetryAnalyzer
+
+**Wrong assumption:**
+
+> Every Selenium failure should automatically be retried.
+
+**Correct:**
+
+Retries should be controlled. Blind retries can hide real application defects.
+
+### JavaScript click
+
+**Wrong assumption:**
+
+> JavaScript click is always better than Selenium click.
+
+**Correct:**
+
+Prefer normal Selenium interaction first. JavaScript can bypass browser-level interaction checks and may hide real problems such as overlays or incorrect element state.
+
+### Window switching
+
+Opening a new tab/window does not automatically switch WebDriver to it.
+
+You must explicitly switch using the window handle.
+
+### Table XPath
+
+Inside a table row:
+
+```xpath
+.//td
+```
+
+is usually preferable to:
+
+```xpath
+//td
+```
+
+because `.//td` searches relative to the current row.
+
+---
+
+# Java Interview Coding
+
+The repository also contains a focused set of Java coding problems commonly asked in SDET and automation interviews, as TestNG tests in [`src/test/java/com/automation/selenium/interview/java/`](src/test/java/com/automation/selenium/interview/java):
+
+```text
+ReverseStringTest.java
+PalindromeTest.java
+CharacterFrequencyTest.java
+DuplicateCharactersTest.java
+FirstNonRepeatingCharacterTest.java
+AnagramTest.java
+ReverseWordsTest.java
+CountWordsTest.java
+RemoveDuplicateCharactersTest.java
+FindDuplicateElementsTest.java
+SecondHighestNumberTest.java
+FindMissingNumberTest.java
+FindMaxMinTest.java
+SortArrayTest.java
+FibonacciTest.java
+PrimeNumberTest.java
+SwapNumbersTest.java
+ArrayIntersectionTest.java
+RemoveDuplicatesFromListTest.java
+StreamFrequencyTest.java
+```
+
+Each Java coding example contains:
+
+```java
+/**
+ * Interview question:
+ * ...
+ *
+ * Interview answer:
+ * ...
+ *
+ * Concept:
+ * ...
+ *
+ * Recommended approach:
+ * ...
+ */
+```
+
+followed by the solution, tests for its edge cases (empty input, negatives, overflow, …) and, where one exists, a check against the library way of doing it.
+
+The focus is on commonly expected SDET skills:
+
+* Strings
+* Arrays
+* Lists
+* Sets
+* Maps
+* Loops
+* Collections
+* Java Streams
+* Basic algorithms
+
+Run them on their own (no browser, about 2 seconds):
 
 ```bash
-mvn clean test                          # all tests, visible browser
-mvn clean test -Dheadless=true          # without a window
-mvn clean test -Dgroups=interview       # one group: smoke, login, admin, pim or interview
-mvn clean test -Dgroups=frames          # one interview topic: locators, synchronization, exceptions, alerts, frames,
-                                        #   windows, dropdowns, elements, actions, javascript, cookies, upload,
-                                        #   testng, framework
-mvn clean test -Dtest=LoginTest         # one class
-mvn clean test -Dtest=SeleniumScenariosTest#dashboardOpensInASecondTab   # one method
-mvn clean test -Dbrowser=edge           # chrome (default), firefox or edge
-mvn clean test -Dthreads=1              # run the classes one after another
-mvn clean test -Pdemo                   # also run the demo tests (2 fail, 2 skip on purpose)
+mvn clean test -Dgroups=java
 ```
 
-In the IDE, run `testng.xml` or any test class or method directly.
+---
 
-**Configuration:** `src/test/resources/config.properties`; every key can be overridden with `-Dkey=value`.
+# Selenium Interview Examples
 
-| Key | Default | Meaning |
-|---|---|---|
-| `baseUrl` | `https://opensource-demo.orangehrmlive.com` | Application under test |
-| `practiceUrl` | `https://the-internet.herokuapp.com` | Practice site for the `interview/` examples |
-| `browser` | `chrome` | `chrome`, `firefox` or `edge` |
-| `headless` | `false` | Run without a window |
-| `timeoutSeconds` | `15` | Explicit wait timeout |
-| `username` / `password` | `Admin` / `admin123` | Demo administrator |
+Examples include:
 
-## 12. Test execution examples
+* Locator strategies
+* Wait strategies
+* Selenium exceptions
+* Alerts
+* Frames
+* Windows
+* Dropdowns
+* Web tables
+* Actions
+* JavaScriptExecutor
+* Cookies
+* File upload
+* Screenshots
+* Broken links
 
-| Class | Group | Tests |
-|---|---|---|
-| `LoginTest` | `login` | Admin can log in (`smoke`) · invalid credentials rejected (data provider: wrong password, unknown user, wrong case) · username and password required · password required · log out (`smoke`) · Back and reload after logout end on the login page · dashboard URL redirects to login when logged out |
-| `SystemUsersTest` | `admin` | System Users opens from the menu (`smoke`) · filter by username · filter by role and status · unknown username finds no records · Reset clears every filter |
-| `EmployeeTest` | `pim` | An employee can be added, found by ID and deleted (`smoke`) · first and last name are required · unknown employee ID finds no records |
-| `SeleniumScenariosTest` | `interview` | 8 Selenium coding scenarios (see [section 6](#6-selenium-interview-examples)) |
-| `TestNgFeaturesTest` | `interview` | 9 runs of TestNG features (see [section 7](#7-testng-interview-examples)) |
-| `ReportDemoTest` | `demo` | Fails and skips **on purpose** (see below) |
-| `interview/…` Selenium topics (15 classes) | `interview` + topic | 46 examples on the practice site (see [section 6](#6-selenium-interview-examples)) |
-| `interview/testng/…` (5 classes + a listener) | `interview`, `testng` | 24 runs, no browser, about 2 seconds |
-| `interview/framework/…` (2 classes) | `interview`, `framework` | 4 tests: two threads with two browsers, configuration overrides |
+They live in [`interview/`](src/test/java/com/automation/selenium/interview) (one package per topic, run with `-Dgroups=<topic>`) and in [`SeleniumScenariosTest`](src/test/java/com/automation/selenium/tests/SeleniumScenariosTest.java) on OrangeHRM.
 
-A normal run has **108 tests**: 17 application tests, 17 interview scenarios on OrangeHRM, and 74 runs of the `interview/` examples, on 3 threads. Most of the run time is spent waiting for the two public sites; `-Dgroups=testng` runs in seconds.
+---
 
-| Command | Tests | Passed | Failed | Skipped | Time |
-|---|---|---|---|---|---|
-| `mvn clean test -Dheadless=true` | 108 | 107 | 1 (site data: OrangeHRM's menu lost "Leave"; test fixed since) | 0 | 12 min 24 s |
-| `mvn clean test -Pdemo -Dheadless=true` | 112 | 107 | 2 on purpose + 1 (practice-site frame error) | 2 on purpose | 12 min 50 s |
-| `mvn clean test -Dgroups=testng` | 24 | 24 | 0 | 0 | about 2 s |
+# TestNG Interview Examples
 
-Latest runs: 6 Oct 2026, headless Chrome, JDK 27, 3 threads. Both web sites are public and shared, so an occasional failure comes from the site (an error page, a module switched off by another user); the report's screenshot shows which. `SeleniumScenariosTest.adminCanLogInWithTheKeyboard` failed in some full parallel runs (the password landed in the user name field) but never in 27 isolated attempts; `LoginPage.loginWithKeyboard` now checks both fields before pressing Enter and names what each one holds if this happens again.
+Examples include:
 
-**Demo tests.** `ReportDemoTest` shows how the framework and the report handle every outcome, not just passes:
+* Annotation lifecycle
+* Groups
+* Priorities
+* Dependencies
+* SoftAssert
+* DataProviders
+* Parameters
+* Optional parameters
+* Invocation count
+* Timeout
+* RetryAnalyzer
+* SkipException
+* Listeners
+* Parallel execution
+* Custom reporting
 
-| Test | Result | What the report shows |
-|---|---|---|
-| Dashboard title checked against a wrong value | Failed (assertion) | `expected [Home] but found [Dashboard]`, stack trace, screenshot |
-| Login with a wrong password | Failed (error) | `IllegalStateException: Login as "Admin" failed: Invalid credentials`, screenshot of the login page |
-| Precondition missing | Skipped (`SkipException`) | The steps run so far and the skip reason |
-| Depends on a failed test | Skipped (dependency) | The test it depends on; it never starts |
+They live in [`interview/testng/`](src/test/java/com/automation/selenium/interview/testng) (no browser, `-Dgroups=testng`), [`TestNgFeaturesTest`](src/test/java/com/automation/selenium/tests/TestNgFeaturesTest.java) and [`ReportDemoTest`](src/test/java/com/automation/selenium/tests/ReportDemoTest.java).
 
-The `demo` group is left out of normal runs (`excludedGroups` in `pom.xml`, `<exclude>` in `testng.xml`), so the build stays green. With `-Pdemo` the build ends as failed, as it should.
+---
 
-## 13. Reporting
+# Framework Design Examples
 
-| Output | Location |
-|---|---|
-| Custom HTML report | `target/surefire-reports/selenium-test-report.html` (`test-output/` when run from the IDE) |
-| Failure screenshots | `target/screenshots/<Class>_<method>_<time>.png` (also embedded in the report) |
-| TestNG / Surefire reports | `target/surefire-reports/` |
+The repository demonstrates:
 
-The report is an interview example in itself: a custom TestNG `IReporter` (`HtmlReportListener`). It shows why you would write your own report and how a screenshot reaches it: `BaseTest` stores the screenshot on the `ITestResult`, and the reporter reads it back after the run.
+* Page Object Model
+* BasePage
+* BaseTest
+* PageFactory
+* Explicit waits
+* ThreadLocal WebDriver
+* Driver lifecycle
+* Configuration overrides
+* Test data management
+* Test isolation
+* Cleanup
+* Step logging
+* Custom HTML reporting
 
-- Verdict, pass rate, environment (application, browser, Java, OS).
-- One collapsible row per test class with pass/fail/skip chips; classes with a failure or skip open first.
-- Each test: groups, duration, recorded steps, failure message, filtered stack trace and screenshot; skip reasons.
-- Search, status filter, expand/collapse all, dark mode, print styles, gentle animations (off when the system asks for reduced motion). One file, works offline.
+---
 
-With the **Failed** filter and the failed cards opened. The first card is a real-world example: the practice site sent Heroku's "Application error" page into one frame, the test reloaded the page twice (both reloads are listed as steps), then failed with a screenshot that shows the broken frame:
+# Test Execution Results
+
+## Normal Interview Suite
+
+The normal suite is designed to remain green.
+
+| Run          | Tests | Passed | Failed | Skipped |
+| ------------ | ----: | -----: | -----: | ------: |
+| Normal suite |   148 |    144 |      4 |       0 |
+
+**Latest normal run (6 Oct 2026, headless Chrome, 14 min 06 s): 144 of 148 passed.** The 4 failures were all on the practice site, which answered with Heroku's "Application error" page on all three attempts (each reload is listed in the report); all 40 Java coding tests, all TestNG examples and all OrangeHRM tests passed. Because the suite runs against two public sites, an occasional failure like this comes from the site, and the report's screenshot shows which.
+
+The normal suite is made of 17 OrangeHRM application tests, 17 interview scenarios on OrangeHRM, 74 runs of the `interview/` Selenium, TestNG and framework examples, and 40 Java coding tests. Most of the run time is spent waiting for the two public sites; `-Dgroups=java` and `-Dgroups=testng` run in seconds.
+
+Run:
+
+```bash
+mvn clean test -Dheadless=true
+```
+
+---
+
+## Demo Outcome Suite
+
+The repository also contains a dedicated `demo` group that intentionally demonstrates different TestNG outcomes.
+
+| Run        | Tests | Passed |        Failed |       Skipped |
+| ---------- | ----: | -----: | ------------: | ------------: |
+| Demo suite |   152 | the 148 of the normal suite | 2 intentional | 2 intentional |
+
+The failed and skipped tests are deliberate demonstrations of:
+
+* Assertion failure
+* Runtime failure
+* `SkipException`
+* Dependency-based skip
+
+They are **not defects in the normal test suite**.
+
+Run:
+
+```bash
+mvn clean test -Pdemo
+```
+
+---
+
+# How to Run
+
+## Normal test execution
+
+```bash
+mvn clean test
+```
+
+## Headless execution
+
+```bash
+mvn clean test -Dheadless=true
+```
+
+## Run a specific group
+
+```bash
+mvn clean test -Dgroups=smoke
+```
+
+Groups: `smoke`, `login`, `admin`, `pim`, `interview`, and one per interview topic: `locators`, `synchronization`, `exceptions`, `alerts`, `frames`, `windows`, `dropdowns`, `elements`, `actions`, `javascript`, `cookies`, `upload`, `testng`, `framework`, `java`.
+
+## Run a specific test class
+
+```bash
+mvn clean test -Dtest=LoginTest
+```
+
+## Run with Edge
+
+```bash
+mvn clean test -Dbrowser=edge
+```
+
+## Run with Firefox
+
+```bash
+mvn clean test -Dbrowser=firefox
+```
+
+## Run sequentially
+
+```bash
+mvn clean test -Dthreads=1
+```
+
+## Run demo outcome tests
+
+```bash
+mvn clean test -Pdemo
+```
+
+## Run only demo tests
+
+```bash
+mvn clean test -Pdemo -Dgroups=demo
+```
+
+---
+
+# Configuration
+
+Configuration is available in:
+
+```text
+src/test/resources/config.properties
+```
+
+Example:
+
+```properties
+baseUrl=https://opensource-demo.orangehrmlive.com
+practiceUrl=https://the-internet.herokuapp.com
+browser=chrome
+headless=false
+timeoutSeconds=15
+username=Admin
+password=admin123
+```
+
+Values can be overridden from Maven:
+
+```bash
+mvn clean test -Dbrowser=edge -Dheadless=true
+```
+
+---
+
+# Reporting
+
+The framework generates a self-contained HTML report.
+
+Location:
+
+```text
+target/surefire-reports/selenium-test-report.html
+```
+
+The report contains:
+
+* Pass/fail/skip status
+* Pass rate
+* Environment information
+* Browser
+* Java version
+* Operating system
+* Test groups
+* Execution time
+* Test steps
+* Failure messages
+* Filtered stack traces
+* Screenshots
+* Skip reasons
+
+Failure screenshots are stored under:
+
+```text
+target/screenshots/
+```
+
+The report is intentionally dependency-light and can be opened as a standalone HTML file. With the **Failed** filter and the failed cards opened, each failure shows its steps, the error and the browser at the moment of failure:
 
 ![Failed tests in the HTML report](docs/images/html-report-failures.png)
 
-## 14. Learning path
+---
 
-Work through the [index](docs/interview-index.md) in this order; every topic below has runnable code (the group name runs just that topic). Finish each level with the matching parts of the [traps page](docs/common-interview-traps.md) and [avoid vs prefer](docs/avoid-vs-prefer.md).
+# Test Isolation and Cleanup
 
-```
-Level 1: Selenium basics
-    close vs quit, findElement(s), navigation          tests/, interview/exceptions
-    locators: all eight By, XPath axes, relative       interview/locators
-    alerts, frames, windows and tabs                   interview/alerts, frames, windows
-    <select>, custom drop-downs, checkboxes            interview/dropdowns, elements, BasePage
-        ↓
-Level 2: Synchronization
-    why not Thread.sleep, implicit vs explicit         interview/synchronization
-    presence vs visibility, ExpectedConditions,
-    FluentWait, custom conditions, spinners
-    stale elements                                     interview/exceptions
-        ↓
-Level 3: Advanced Selenium
-    Actions, JavascriptExecutor                        interview/actions, javascript
-    web tables, screenshots, broken links              interview/elements, tests/SeleniumScenariosTest
-    cookies, file upload                               interview/cookies, upload
-    the ten common exceptions                          interview/exceptions
-        ↓
-Level 4: TestNG
-    annotation order, alwaysRun                        interview/testng/AnnotationOrderTest
-    assertions and SoftAssert, groups, priority,       tests/TestNgFeaturesTest
-    dependencies, invocationCount, timeOut, retry      interview/testng/DependencyTest
-    DataProvider (all forms), Parameters               interview/testng/DataProviderVariantsTest
-    listeners, parallel execution                      interview/testng/ListenerTest, ParallelExecutionTest
-        ↓
-Level 5: Framework design
-    POM, PageFactory, BasePage, BaseTest               pages/, base/
-    DriverManager + ThreadLocal, configuration         interview/framework
-    test data, isolation and cleanup, reporting        tests/EmployeeTest, report/
+The public demo application is shared and its data changes over time.
+
+Therefore, tests should avoid assumptions such as:
+
+```text
+There must be exactly 10 users.
 ```
 
-## 15. Future topics
+Instead, tests should verify behavior:
 
-The lab covers the topics planned for it. Ideas for later: radio buttons and HTML5 drag and drop on a page that has them, and more OrangeHRM scenarios.
+```text
+Every returned record matches the requested filter.
+```
 
-Deliberately **out of scope** here (they belong in a separate production-style portfolio project): Docker, Selenium Grid, CI/CD, API testing and cloud execution.
+Tests that create data should clean it up.
 
-Known limitations: only Chrome has been run (Firefox and Edge are supported by `DriverManager`). Both sites are public and shared: OrangeHRM is sometimes slow or down, and the free Heroku practice site sometimes sends broken pages (handled by `PracticeSiteTest.open()`, which reloads and logs it). Application tests have no retry on purpose.
+For example:
 
-## 16. Author
+```text
+Create employee
+      ↓
+Verify employee
+      ↓
+Delete employee
+      ↓
+Cleanup
+```
 
-**Niranjan Kumar Agri** · [GitHub](https://github.com/niranjankagri) · [LinkedIn](https://www.linkedin.com/in/niranjan-kumar-agri/)
+This makes the examples more representative of real automation engineering practices.
 
-Feedback and questions are welcome through GitHub issues.
+---
+
+# Known Limitations
+
+* The primary validation has been performed with Chrome.
+* Firefox and Edge are supported but should be validated separately when required.
+* Public demo applications can occasionally be slow, unavailable or return temporary server errors. The free Heroku practice site sometimes sends broken pages; `PracticeSiteTest` loads such a page again (up to three times) and writes every reload into the report.
+* Most tests intentionally avoid blind retries because retrying every failure can hide genuine defects.
+* A `RetryOnce` implementation is included where controlled retry behavior is useful.
+* No CI pipeline is included because this repository is intentionally focused on Selenium/Java/TestNG interview preparation.
+
+---
+
+# What This Repository Intentionally Does NOT Cover
+
+This repository focuses specifically on:
+
+**Selenium + Java + TestNG + UI automation interview preparation.**
+
+The following areas are intentionally reserved for a separate production-style QA portfolio project:
+
+* REST API automation
+* Playwright
+* Cypress
+* Mobile automation
+* Performance testing
+* Docker
+* Selenium Grid
+* Cloud test execution
+* CI/CD pipelines
+* GitHub Actions
+* Jenkins
+* AWS
+* Kubernetes
+* SonarQube
+* Enterprise quality gates
+* Advanced infrastructure
+* Large-scale test orchestration
+
+This separation keeps the current repository focused rather than turning it into an unnecessarily large collection of unrelated technologies.
+
+---
+
+# Future Portfolio Project
+
+A separate repository will demonstrate production-style QA engineering.
+
+Planned areas include:
+
+```text
+UI Automation
++
+API Automation
++
+CI/CD
++
+Docker
++
+Cloud Execution
++
+Test Architecture
++
+Quality Engineering
++
+Reporting
++
+Code Quality
+```
+
+This repository and the future portfolio repository therefore have different purposes.
+
+### This repository
+
+```text
+selenium-java-framework
+
+Interview Automation Lab
+Selenium + Java + TestNG
+Question → Answer → Code
+```
+
+### Future repository
+
+```text
+qa-automation-portfolio
+
+Production-Style QA Engineering
+UI + API + CI/CD + Docker + Cloud
+```
+
+---
+
+# Learning Path
+
+Recommended learning order:
+
+```text
+1. Selenium WebDriver Basics
+        ↓
+2. Locators
+        ↓
+3. Synchronization / Waits
+        ↓
+4. Selenium Exceptions
+        ↓
+5. Alerts / Frames / Windows
+        ↓
+6. Elements / Dropdowns / Tables
+        ↓
+7. Actions / JavaScript
+        ↓
+8. Page Object Model
+        ↓
+9. PageFactory
+        ↓
+10. TestNG
+        ↓
+11. DataProviders
+        ↓
+12. Listeners / Reporting
+        ↓
+13. ThreadLocal / Parallel Execution
+        ↓
+14. Java Coding Questions
+        ↓
+15. SDET Interview Preparation
+```
+
+---
+
+# Interview Preparation Strategy
+
+For each interview question, use the following answer structure:
+
+### 1. Definition
+
+Explain what the concept is.
+
+### 2. Why
+
+Explain why it is used.
+
+### 3. Example
+
+Give a practical automation example.
+
+### 4. Implementation
+
+Show the relevant Java/Selenium code.
+
+### 5. Trade-off
+
+Explain when the approach should and should not be used.
+
+### Example
+
+**Question: Why should you avoid `Thread.sleep()`?**
+
+**Answer:**
+
+`Thread.sleep()` introduces a fixed delay regardless of whether the application is ready. It can make tests unnecessarily slow and can still fail when the application takes longer than the hardcoded delay.
+
+I prefer explicit waits because they wait for a specific application condition and continue as soon as that condition is satisfied.
+
+---
+
+# Documentation
+
+Additional documentation:
+
+* [docs/interview-index.md](docs/interview-index.md)
+* [docs/common-interview-traps.md](docs/common-interview-traps.md)
+* [docs/avoid-vs-prefer.md](docs/avoid-vs-prefer.md)
+* [docs/interview-questions.pdf](docs/interview-questions.pdf)
+
+These documents provide:
+
+* Interview questions
+* Interview-ready answers
+* Code references
+* Common mistakes
+* Better approaches
+* Topic mapping
+* Learning guidance
+
+---
+
+# Contributing / Extending
+
+When adding a new interview example:
+
+1. Identify the interview question.
+2. Add the interview-ready answer.
+3. Explain the concept.
+4. Add a working Java implementation.
+5. Document the common mistake.
+6. Explain the recommended approach.
+7. Add the question to the interview index.
+8. Keep the example focused on the concept being demonstrated.
+
+Avoid adding technologies simply for the sake of increasing the technology list.
+
+---
+
+# Author
+
+**Niranjan Kumar Agri**
+
+Technical Lead QA | SDET | QA Automation | Selenium | Java | TestNG
+
+Focused on:
+
+* Test Automation
+* QA Engineering
+* Automation Architecture
+* Selenium
+* Java
+* TestNG
+* API Automation
+* CI/CD
+* Quality Engineering
+
+---
+
+## Repository Goal
+
+The purpose of this repository is not to demonstrate the largest possible automation stack.
+
+The purpose is to demonstrate that I can:
+
+* Understand Selenium deeply
+* Explain automation concepts clearly
+* Write maintainable Java automation
+* Design reusable test components
+* Handle synchronization and dynamic applications
+* Use TestNG effectively
+* Design parallel execution
+* Diagnose common Selenium problems
+* Explain trade-offs during technical interviews
+* Translate interview questions into working automation code
+
+> **Learn the concept. Explain the concept. Implement the concept.**
