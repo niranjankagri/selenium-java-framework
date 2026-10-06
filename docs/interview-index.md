@@ -14,7 +14,7 @@ Every Selenium, TestNG and framework question this lab answers with **working co
 | `tests/` | [`src/test/java/com/automation/selenium/tests/`](../src/test/java/com/automation/selenium/tests) | Application tests and scenarios on OrangeHRM, built with page objects |
 | `pages/` | [`src/main/java/com/automation/selenium/pages/`](../src/main/java/com/automation/selenium/pages) | Page objects for OrangeHRM |
 
-Run one topic with its group, e.g. `mvn clean test -Dgroups=exceptions`.
+Run one topic with its group, e.g. `mvn clean test -Dgroups=exceptions` or `-Dgroups=java`.
 
 ## Contents
 
@@ -29,7 +29,8 @@ Run one topic with its group, e.g. `mvn clean test -Dgroups=exceptions`.
 9. [TestNG core](#9-testng-core)
 10. [TestNG data, parallel runs, listeners and retry](#10-testng-data-parallel-runs-listeners-and-retry)
 11. [Reporting, build and run](#11-reporting-build-and-run)
-12. [Not covered by code](#12-not-covered-by-code)
+12. [Java coding](#12-java-coding)
+13. [Not covered by code](#13-not-covered-by-code)
 
 ---
 
@@ -166,7 +167,34 @@ All in [`interview/exceptions/SeleniumExceptionsTest`](../src/test/java/com/auto
 | 75 | How does Maven run TestNG? How do you run one class, method or group? | 🟢 | Surefire finds and runs the tests: `-Dtest=Class#method`, `-Dgroups=…`. With `suiteXmlFiles` set, these switches are ignored, which is why this project runs without a suite file. | [`pom.xml`](../pom.xml) (Surefire) | Q74–Q76 |
 | 76 | What is a Maven profile, and when do you use one? | 🟢 | A named set of settings switched on with `-P<id>`, e.g. a different group filter or environment. | `demo` profile in [`pom.xml`](../pom.xml): `mvn clean test -Pdemo` | Q78 |
 
-## 12. Not covered by code
+## 12. Java coding
+
+Common SDET coding questions on strings, arrays, collections and streams, in [`interview/java/`](../src/test/java/com/automation/selenium/interview/java). Each class has the solution, its edge cases and, where one exists, a check against the library way. No browser; the whole group runs in about 2 seconds (`mvn clean test -Dgroups=java`). Not in the PDF, which covers Selenium and TestNG.
+
+| # | Question | Level | Interview answer | Implementation |
+|---|---|---|---|---|
+| 77 | Reverse a string without `StringBuilder.reverse()`. | 🟢 ⭐ | Copy to a char array and swap from both ends towards the middle, O(n); in real code `new StringBuilder(s).reverse()`. Avoid `result = c + result` in a loop (O(n²)). | [`ReverseStringTest`](../src/test/java/com/automation/selenium/interview/java/ReverseStringTest.java) |
+| 78 | Check whether a string is a palindrome. | 🟢 ⭐ | Two indexes from both ends, stop at the first mismatch; for phrases skip non-letters and ignore case. Ask whether case and punctuation count. | [`PalindromeTest`](../src/test/java/com/automation/selenium/interview/java/PalindromeTest.java) |
+| 79 | Count how often each character occurs. | 🟢 ⭐ | One pass with `map.merge(c, 1, Integer::sum)` into a `LinkedHashMap` (keeps first-appearance order), O(n). | [`CharacterFrequencyTest`](../src/test/java/com/automation/selenium/interview/java/CharacterFrequencyTest.java) |
+| 80 | Find the duplicate characters in a string. | 🟢 ⭐ | A `seen` set: `seen.add(c)` returns false for a repeat; collect repeats in a `LinkedHashSet` so each appears once. | [`DuplicateCharactersTest`](../src/test/java/com/automation/selenium/interview/java/DuplicateCharactersTest.java) |
+| 81 | Find the first non-repeating character. | 🟡 ⭐ | Count first (`LinkedHashMap`), then return the first entry with count 1; `Optional.empty()` when there is none. | [`FirstNonRepeatingCharacterTest`](../src/test/java/com/automation/selenium/interview/java/FirstNonRepeatingCharacterTest.java) |
+| 82 | Are two strings anagrams? | 🟢 ⭐ | Normalise (lower case, no spaces), sort both char arrays, compare; different lengths → no at once. Counting letters is the O(n) alternative. | [`AnagramTest`](../src/test/java/com/automation/selenium/interview/java/AnagramTest.java) |
+| 83 | Reverse the words of a sentence. | 🟢 | `trim().split("\\s+")`, then join from the last word back; `\\s+` avoids empty words from repeated spaces. | [`ReverseWordsTest`](../src/test/java/com/automation/selenium/interview/java/ReverseWordsTest.java) |
+| 84 | Count the words in a sentence. | 🟢 | Count where words start (non-space after space), or `trim().split("\\s+").length` with a blank-input check (it returns 1 for ""). | [`CountWordsTest`](../src/test/java/com/automation/selenium/interview/java/CountWordsTest.java) |
+| 85 | Remove duplicate characters, keeping the first of each. | 🟢 | Append a character only when `seen.add(c)` is true; or `text.chars().distinct()`. | [`RemoveDuplicateCharactersTest`](../src/test/java/com/automation/selenium/interview/java/RemoveDuplicateCharactersTest.java) |
+| 86 | Find the duplicate elements in an array. | 🟢 ⭐ | `seen.add(n)` false → duplicate, collected in a `LinkedHashSet`; O(n) time, O(n) space (sort and compare neighbours: less space, O(n log n)). | [`FindDuplicateElementsTest`](../src/test/java/com/automation/selenium/interview/java/FindDuplicateElementsTest.java) |
+| 87 | Find the second-highest number without sorting. | 🟡 ⭐ | One pass with `highest` and `second`; skip values equal to the highest; empty result when there are fewer than two distinct values. | [`SecondHighestNumberTest`](../src/test/java/com/automation/selenium/interview/java/SecondHighestNumberTest.java) |
+| 88 | Find the missing number in 1..n. | 🟡 ⭐ | `n(n+1)/2` minus the array's sum, added up in a `long` (an `int` overflows for large n); XOR is the overflow-free alternative. | [`FindMissingNumberTest`](../src/test/java/com/automation/selenium/interview/java/FindMissingNumberTest.java) |
+| 89 | Find the largest and smallest value in one pass. | 🟢 | Start both from the first element (not 0: wrong for negatives), update in one loop; reject an empty array. Library: `summaryStatistics()`. | [`FindMaxMinTest`](../src/test/java/com/automation/selenium/interview/java/FindMaxMinTest.java) |
+| 90 | Sort an array without `Arrays.sort`. | 🟢 ⭐ | Bubble sort with an early exit when a pass makes no swap, O(n²); say that real code uses `Arrays.sort` (O(n log n)). | [`SortArrayTest`](../src/test/java/com/automation/selenium/interview/java/SortArrayTest.java) |
+| 91 | Generate the Fibonacci series / the n-th number. | 🟢 ⭐ | A loop keeping the last two values, O(n); plain recursion recomputes values (O(2ⁿ)); `long` overflows after the 92nd number. | [`FibonacciTest`](../src/test/java/com/automation/selenium/interview/java/FibonacciTest.java) |
+| 92 | Check whether a number is prime. | 🟢 ⭐ | Below 2 no, 2 yes, other evens no; then odd divisors while `i * i <= n` (√n). Sieve of Eratosthenes for many numbers. | [`PrimeNumberTest`](../src/test/java/com/automation/selenium/interview/java/PrimeNumberTest.java) |
+| 93 | Swap two numbers without a third variable. | 🟢 | `a = a + b; b = a - b; a = a - b;` or XOR; works even on `int` overflow (wrap-around). A temporary variable is clearer in real code. | [`SwapNumbersTest`](../src/test/java/com/automation/selenium/interview/java/SwapNumbersTest.java) |
+| 94 | Find the common elements of two arrays. | 🟢 | Put one array in a `HashSet`, keep elements of the other that it contains, in a `LinkedHashSet`; O(n + m) instead of nested loops. | [`ArrayIntersectionTest`](../src/test/java/com/automation/selenium/interview/java/ArrayIntersectionTest.java) |
+| 95 | Remove duplicates from a list, keeping the order. | 🟢 ⭐ | `new ArrayList<>(new LinkedHashSet<>(list))` or `stream().distinct()`; a plain `HashSet` loses the order. | [`RemoveDuplicatesFromListTest`](../src/test/java/com/automation/selenium/interview/java/RemoveDuplicatesFromListTest.java) |
+| 96 | Count word frequency with streams. | 🟡 ⭐ | `groupingBy(Function.identity(), LinkedHashMap::new, counting())` after lower-casing and splitting on `\\W+`; `counting()` returns `Long`. | [`StreamFrequencyTest`](../src/test/java/com/automation/selenium/interview/java/StreamFrequencyTest.java) |
+
+## 13. Not covered by code
 
 Topics this lab explains but does not run, and why:
 
