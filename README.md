@@ -473,7 +473,9 @@ The underlying DOM element can still become stale after:
 
 It can improve performance for genuinely static elements, but it can increase the risk of stale-element problems when the DOM changes.
 
-This repository intentionally demonstrates the difference between `@FindBy` and `@CacheLookup` after a page reload.
+`@CacheLookup` is intentionally avoided for dynamic elements because it caches the located `WebElement` reference and can therefore increase the risk of stale-element problems when the DOM changes. [`SeleniumScenariosTest`](src/test/java/com/automation/selenium/tests/SeleniumScenariosTest.java) demonstrates the difference between `@FindBy` and `@CacheLookup` after a page reload.
+
+Locators built from a value, such as a field label, a button text or a table row ID, cannot be annotations and stay methods that return a `By`.
 
 ### Interview Answer
 
