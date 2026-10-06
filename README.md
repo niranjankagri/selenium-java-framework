@@ -48,7 +48,7 @@ This repository is an **interview preparation and learning reference**, not a pr
 4. a working Java implementation you can run,
 5. the common mistake and the better approach.
 
-Every interview class starts with the **interview question, the concept and the recommended approach** in its Javadoc, and every line of code is commented. There are also 104 questions with long answers in [`docs/interview-questions.pdf`](docs/interview-questions.pdf) and a page of [common interview traps](docs/common-interview-traps.md).
+Every interview class starts with the **interview question, the interview-ready answer, the concept and the recommended approach** in its Javadoc, and every line of code is commented. Next to the code there are three pages: [common interview traps](docs/common-interview-traps.md), [avoid vs prefer](docs/avoid-vs-prefer.md) (bad code next to the better version) and 104 questions with long answers in [`docs/interview-questions.pdf`](docs/interview-questions.pdf).
 
 ## 2. Topics covered
 
@@ -120,6 +120,7 @@ Thread 3 ── EmployeeTest     ── ChromeDriver 3
 selenium-java-framework
 ├── docs/interview-index.md            76 questions → short answer → implementation, with difficulty levels
 ├── docs/common-interview-traps.md     Trick questions: the short answer and where the lab shows it
+├── docs/avoid-vs-prefer.md            Common mistakes next to the better code, with the reason
 ├── docs/interview-questions.pdf       104 Selenium + TestNG questions: explanation, example, link to the code
 ├── docs/images/                       Report screenshots used in this README
 ├── pom.xml                            Maven build: Surefire parallel classes, groups, demo profile
@@ -166,7 +167,7 @@ selenium-java-framework
 
 ## 6. Selenium interview examples
 
-**One class per topic** in [`interview/`](src/test/java/com/automation/selenium/interview). Each class Javadoc starts with the interview question, the concept and the recommended approach; each test shows one technique. Run a topic with its group, e.g. `-Dgroups=frames`.
+**One class per topic** in [`interview/`](src/test/java/com/automation/selenium/interview). Each class Javadoc starts with the interview question and the answer to give, then the concept and the recommended approach; each test shows one technique. Run a topic with its group, e.g. `-Dgroups=frames`.
 
 | Topic (group) | Level | Class | What it shows |
 |---|---|---|---|
@@ -279,7 +280,7 @@ One class per page holds its locators and actions; tests call methods and assert
 **Q: How does a DataProvider work?**
 A method annotated `@DataProvider` returns `Object[][]`; TestNG runs the test once per row and passes the row as parameters. → [`TestData`](src/test/java/com/automation/selenium/data/TestData.java), `LoginTest.loginIsRejectedForInvalidCredentials`
 
-All 76 answers are in the [index](docs/interview-index.md); the trick questions are on the [common interview traps](docs/common-interview-traps.md) page.
+All 76 answers are in the [index](docs/interview-index.md); the trick questions are on the [common interview traps](docs/common-interview-traps.md) page, and common mistakes with the better code are on [avoid vs prefer](docs/avoid-vs-prefer.md).
 
 ## 11. How to run
 
@@ -368,7 +369,7 @@ With the **Failed** filter and the failed cards opened. The first card is a real
 
 ## 14. Learning path
 
-Work through the [index](docs/interview-index.md) in this order; every topic below has runnable code (the group name runs just that topic). Finish each level with the matching part of the [traps page](docs/common-interview-traps.md).
+Work through the [index](docs/interview-index.md) in this order; every topic below has runnable code (the group name runs just that topic). Finish each level with the matching parts of the [traps page](docs/common-interview-traps.md) and [avoid vs prefer](docs/avoid-vs-prefer.md).
 
 ```
 Level 1: Selenium basics
@@ -406,8 +407,6 @@ Level 5: Framework design
 
 Next steps for the lab:
 
-- **"Avoid vs prefer" code** next to the examples (e.g. `Thread.sleep` vs an explicit wait, a static driver vs `ThreadLocal`).
-- **Interview-ready answer** at the top of each `interview/` class, in the same words as the index.
 - **The PDF** updated to link the new `interview/` examples.
 
 Deliberately **out of scope** here (they belong in a separate production-style portfolio project): Docker, Selenium Grid, CI/CD, API testing and cloud execution.

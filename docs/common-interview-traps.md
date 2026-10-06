@@ -1,6 +1,6 @@
 # Common Interview Traps
 
-Questions where the obvious answer is wrong or only half right. Each one has the short answer to give, why it matters, and where this lab shows it in working code.
+Questions where the obvious answer is wrong or only half right. Each one has the short answer to give, why it matters, and where this lab shows it in working code. For the same mistakes as code, see [Avoid vs prefer](avoid-vs-prefer.md).
 
 **Levels:** 🟢 Beginner · 🟡 Intermediate · 🔴 Advanced · ⭐ Frequently asked
 
@@ -158,9 +158,9 @@ Paths: `interview/` = [`src/test/java/com/automation/selenium/interview/`](../sr
 **Answer:** No. A disabled test is not run *and not reported*. A skipped test is reported as skipped, with a reason.
 **In the lab:** `DependencyTest.disabledTestNeverRuns`.
 
-### Does `priority` order tests across the whole suite? 🟡
+### Can I rely on `priority` to run tests in order across the suite? 🟡
 
-**Answer:** No. It orders methods within a class (lower first). Across classes and with parallel runs there is no global order; tests that need an order should use dependencies, or better, not need one.
+**Answer:** No. `priority` only sorts the methods TestNG schedules together (lower first); it is not a dependency. With parallel runs (here `parallel=classes`, each class on its own thread) there is no dependable order between classes. Tests that need an order should use dependencies, or better, not need one.
 **In the lab:** `TestNgFeaturesTest.loginPageIsShown` → `adminLogsInAfterThePageCheck`.
 
 ### I used `SoftAssert` and the failures vanished. Why? 🟢 ⭐
