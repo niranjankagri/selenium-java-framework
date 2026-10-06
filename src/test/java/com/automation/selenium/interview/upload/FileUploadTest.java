@@ -25,6 +25,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you upload a file with Selenium?
  * <p>
+ * Interview answer: I don't touch the operating system's file dialog. I call
+ * sendKeys with the file's absolute path on the input of type file and
+ * submit the form; on Selenium Grid I add a LocalFileDetector so the file is
+ * sent to the remote machine.
+ * <p>
  * Concept: the file chooser window belongs to the operating system, and
  * Selenium cannot drive it. It doesn't need to: call {@code sendKeys} with
  * the file's <b>absolute path</b> on the {@code <input type="file">}

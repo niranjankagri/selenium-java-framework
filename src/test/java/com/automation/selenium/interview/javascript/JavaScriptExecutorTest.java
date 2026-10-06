@@ -28,6 +28,12 @@ import com.automation.selenium.utils.Steps;
  * Interview question: When do you use JavascriptExecutor, and what is the
  * risk?
  * <p>
+ * Interview answer: I use JavascriptExecutor for what WebDriver can't do,
+ * such as reading document.readyState or scrolling. Arguments go in as
+ * arguments[0] and so on, and returned values come back as Long, String,
+ * Boolean, WebElement or List. I avoid JavaScript clicks: they bypass what a
+ * real user would hit, so they can hide bugs.
+ * <p>
  * Concept: {@code ((JavascriptExecutor) driver).executeScript(script, args)}
  * runs JavaScript in the page. Values passed in are {@code arguments[0]},
  * {@code arguments[1]}, …; a {@code return} hands a value back, converted to

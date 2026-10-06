@@ -18,6 +18,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: How do you manage configuration such as URLs, the
  * browser and timeouts?
  * <p>
+ * Interview answer: Settings live in one properties file read through one
+ * class, and any value can be overridden on the command line with
+ * -Dkey=value, so CI can change the browser or environment without code
+ * changes. A missing setting fails at once with its name.
+ * <p>
  * Concept: settings live outside the code in one file
  * ({@code config.properties} on the test classpath), are read through one
  * class ({@link Config}), and can be overridden per run with

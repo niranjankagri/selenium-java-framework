@@ -24,6 +24,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: What is an explicit wait? What is the difference
  * between presence and visibility?
  * <p>
+ * Interview answer: An explicit wait polls one condition until it is true or
+ * times out. Presence means the element is in the DOM; visibility means it
+ * is also displayed. I wait for the state I am about to use: visible before
+ * reading, clickable before clicking, invisible after a spinner.
+ * <p>
  * Concept: a {@code WebDriverWait} polls one condition (every 500 ms by
  * default) until it is true or the timeout passes, then returns the result
  * or throws {@code TimeoutException}. {@code ExpectedConditions} has the

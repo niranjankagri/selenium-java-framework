@@ -22,6 +22,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: How do you handle JavaScript alerts, confirms and
  * prompts?
  * <p>
+ * Interview answer: An alert is a browser dialog, not a page element, so I
+ * wait for it with alertIsPresent(), then read getText() and accept(),
+ * dismiss() or sendKeys() for a prompt. Every alert I open must be answered,
+ * otherwise the next command fails.
+ * <p>
  * Concept: a JavaScript {@code alert()}, {@code confirm()} or
  * {@code prompt()} is a browser dialog, not part of the page, so it cannot
  * be found with {@code findElement}. {@code driver.switchTo().alert()} gives

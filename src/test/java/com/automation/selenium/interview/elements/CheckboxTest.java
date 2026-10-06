@@ -22,6 +22,10 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you handle checkboxes (and radio buttons)?
  * <p>
+ * Interview answer: I read isSelected() first and click only when the state
+ * has to change, because a click toggles a checkbox. Radio buttons work the
+ * same, except that clicking a selected radio button doesn't unselect it.
+ * <p>
  * Concept: {@code isSelected()} tells whether a checkbox or radio button is
  * checked; {@code click()} toggles a checkbox. Clicking blindly is a common
  * bug: if the box was already checked, the click <i>unchecks</i> it.

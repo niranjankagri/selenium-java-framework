@@ -27,6 +27,13 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: In what order do the TestNG annotations run?
  * <p>
+ * Interview answer: From the outside in and back out: {@code @BeforeSuite},
+ * {@code @BeforeTest} (once per {@code <test>} tag), {@code @BeforeClass},
+ * {@code @BeforeMethod}, the {@code @Test}, then {@code @AfterMethod},
+ * {@code @AfterClass}, {@code @AfterTest} and {@code @AfterSuite}.
+ * Configuration methods need {@code alwaysRun = true} to run under a group
+ * filter.
+ * <p>
  * Concept: from the outside in, then back out:
  * <pre>
  * &#64;BeforeSuite   once, before everything in the suite

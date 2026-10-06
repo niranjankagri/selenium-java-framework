@@ -19,6 +19,12 @@ import com.automation.selenium.utils.Steps;
  * Interview question: Which TestNG listeners do you know, and how do you
  * register one?
  * <p>
+ * Interview answer: TestNG listeners are callbacks such as ITestListener for
+ * each test's start, success, failure and skip, IReporter for a report after
+ * the run, and IRetryAnalyzer for retries. I register them with @Listeners,
+ * in testng.xml, or through ServiceLoader; @Listeners applies to the whole
+ * suite, not just the class.
+ * <p>
  * Concept: listeners are callbacks TestNG calls during the run:
  * {@code ITestListener} (each test: start, success, failure, skip),
  * {@code ISuiteListener} (suite start and end), {@code IReporter} (one call

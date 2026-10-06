@@ -23,6 +23,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you handle a link that opens a new window?
  * <p>
+ * Interview answer: Selenium does not follow a new window by itself. I store
+ * the original handle, wait until the number of windows grows, take the new
+ * handle by comparing the handle sets before and after, switch to it, work,
+ * close it and switch back to the original.
+ * <p>
  * Concept: every window or tab has a <b>handle</b> (a string ID).
  * {@code getWindowHandle()} is the current one, {@code getWindowHandles()}
  * all open ones. Selenium does <i>not</i> follow a new window by itself: the

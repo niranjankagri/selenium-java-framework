@@ -24,6 +24,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: What is an implicit wait, and why does this framework
  * not use one?
  * <p>
+ * Interview answer: An implicit wait makes every findElement retry for a set
+ * time. It is global and only waits for the element to exist, so I don't use
+ * it: I use explicit waits for the exact condition, and I never mix the two,
+ * because their timeouts add up.
+ * <p>
  * Concept: {@code driver.manage().timeouts().implicitlyWait(t)} makes every
  * {@code findElement} keep retrying for up to {@code t} before it throws
  * {@link NoSuchElementException}. It is set once and applies to the whole

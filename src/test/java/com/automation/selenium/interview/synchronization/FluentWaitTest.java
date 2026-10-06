@@ -31,6 +31,12 @@ import com.automation.selenium.utils.Steps;
  * Interview question: What is a FluentWait, and how is it different from
  * WebDriverWait? How do you write a custom wait condition?
  * <p>
+ * Interview answer: A FluentWait lets me set the timeout, the polling
+ * interval, the exceptions to ignore and the timeout message; WebDriverWait
+ * is a FluentWait with sensible defaults. For anything ExpectedConditions
+ * doesn't cover, I write a lambda that returns null to keep waiting or a
+ * value to stop.
+ * <p>
  * Concept: {@link FluentWait} lets you set the timeout, the polling interval,
  * the exceptions to ignore while polling, and the message for the timeout.
  * {@code WebDriverWait} <i>is</i> a {@code FluentWait<WebDriver>} with ready

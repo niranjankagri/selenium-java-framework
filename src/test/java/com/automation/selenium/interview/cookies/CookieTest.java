@@ -25,6 +25,12 @@ import com.automation.selenium.utils.Steps;
  * Interview question: How do you work with cookies in Selenium? Can you skip
  * the login screen?
  * <p>
+ * Interview answer: driver.manage() gives getCookies, getCookieNamed,
+ * addCookie, deleteCookieNamed and deleteAllCookies, after a page of that
+ * site is open. Deleting the session cookie logs the user out, and adding a
+ * saved session cookie to a new session skips the login form when the login
+ * itself isn't under test.
+ * <p>
  * Concept: {@code driver.manage()} reads and changes the cookies of the
  * current site: {@code getCookies()}, {@code getCookieNamed(name)},
  * {@code addCookie(cookie)}, {@code deleteCookieNamed(name)},

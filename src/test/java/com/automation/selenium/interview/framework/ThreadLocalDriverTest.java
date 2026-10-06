@@ -32,6 +32,12 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you make WebDriver safe for parallel runs?
  * <p>
+ * Interview answer: I keep the WebDriver in a ThreadLocal, so every test
+ * thread gets its own browser and no two threads share one; WebDriver itself
+ * is still not thread-safe. I start a fresh browser per test, quit it
+ * afterwards and remove the ThreadLocal value, because thread pools reuse
+ * threads.
+ * <p>
  * Concept: a {@code static WebDriver driver} is one variable shared by all
  * threads: with parallel tests, thread B overwrites thread A's browser and
  * both drive the same window. {@link DriverManager} keeps the driver in a

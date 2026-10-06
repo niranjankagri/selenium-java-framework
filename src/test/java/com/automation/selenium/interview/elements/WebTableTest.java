@@ -28,6 +28,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you read and work with a web table?
  * <p>
+ * Interview answer: I read the header titles once, then every row's cells,
+ * and map them by position into column-to-value maps; after that every
+ * question is plain Java. Inside a row I search with .// or CSS, because an
+ * XPath starting with // searches the whole page.
+ * <p>
  * Concept: a table is rows ({@code tr}) of cells ({@code td}) under a header
  * ({@code th}). Read the header titles once, then each row's cells, and map
  * them by position: <i>column title → cell text</i>. Then any question

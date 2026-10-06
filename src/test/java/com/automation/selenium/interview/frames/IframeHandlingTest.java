@@ -29,6 +29,12 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you work with frames and iframes?
  * <p>
+ * Interview answer: The driver only searches the document it is switched to,
+ * so I switch into the frame by name or id, WebElement or index, ideally
+ * with frameToBeAvailableAndSwitchToIt. For nested frames I go level by
+ * level, parentFrame() takes me one level up and defaultContent() back to
+ * the page.
+ * <p>
  * Concept: a frame holds a separate document. The driver searches only the
  * document it is switched to, so an element inside a frame is "not found"
  * until you switch into the frame. Switch with

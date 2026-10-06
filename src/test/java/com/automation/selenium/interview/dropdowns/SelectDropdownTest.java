@@ -26,6 +26,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: How do you handle a {@code <select>} drop-down?
  * <p>
+ * Interview answer: For a real {@code <select>} I use Selenium's Select class:
+ * selectByVisibleText, selectByValue or selectByIndex, and getOptions or
+ * getFirstSelectedOption to read it. Select only works on {@code <select>}; custom
+ * div drop-downs are clicked open and the option is clicked by its text.
+ * <p>
  * Concept: Selenium's {@link Select} class wraps a native {@code <select>}
  * element: {@code selectByVisibleText}, {@code selectByValue},
  * {@code selectByIndex}, {@code getOptions}, {@code getFirstSelectedOption},

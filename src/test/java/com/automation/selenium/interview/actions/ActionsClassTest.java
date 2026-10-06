@@ -26,6 +26,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: When and how do you use the Actions class?
  * <p>
+ * Interview answer: I use the Actions class for low-level input that click()
+ * and sendKeys() can't do: hover with moveToElement, right-click with
+ * contextClick, key combinations with keyDown and keyUp, and drag and drop.
+ * The chain only runs when I call perform().
+ * <p>
  * Concept: {@link Actions} sends low-level mouse and keyboard input:
  * {@code moveToElement} (hover), {@code contextClick} (right-click),
  * {@code doubleClick}, {@code clickAndHold}/{@code release} and

@@ -16,6 +16,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: What are dependsOnGroups and enabled = false? What
  * happens to a test whose dependency fails?
  * <p>
+ * Interview answer: dependsOnMethods and dependsOnGroups run a test only
+ * after the others passed; if one fails, the dependent test is skipped, not
+ * failed, unless it has alwaysRun = true. enabled = false switches a test
+ * off completely: it is neither run nor reported.
+ * <p>
  * Concept:
  * <ul>
  * <li>{@code dependsOnMethods} / {@code dependsOnGroups}: the test runs

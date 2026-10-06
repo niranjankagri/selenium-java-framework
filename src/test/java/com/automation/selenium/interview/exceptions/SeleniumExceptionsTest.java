@@ -42,6 +42,14 @@ import com.automation.selenium.utils.Steps;
  * Interview question: Which Selenium exceptions do you know, what causes
  * them, and how do you handle them?
  * <p>
+ * Interview answer: The common ones are NoSuchElement (wrong locator, not
+ * there yet, or in a frame), StaleElementReference (the element was re-
+ * rendered: find it again), ElementNotInteractable (hidden),
+ * ElementClickIntercepted (something covers it: wait for it to go), Timeout
+ * (read which condition failed), NoSuchWindow and NoSuchFrame (switch
+ * correctly). I fix the cause; I don't hide it with try/catch, retries or
+ * JavaScript clicks.
+ * <p>
  * Each test reproduces one exception <b>on purpose</b> (checked with
  * {@code assertThrows}, so the test passes when the exception happens), then
  * shows the right way to avoid or handle it. The Javadoc of each test gives

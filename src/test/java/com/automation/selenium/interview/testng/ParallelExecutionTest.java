@@ -22,6 +22,11 @@ import com.automation.selenium.utils.Steps;
  * Interview question: How does TestNG run tests in parallel, and why does a
  * Selenium framework need {@code ThreadLocal}?
  * <p>
+ * Interview answer: TestNG runs methods, classes or tests in parallel with
+ * the parallel attribute and thread-count, or one method's invocations with
+ * threadPoolSize. Anything shared must be thread-safe, so the WebDriver
+ * lives in a ThreadLocal and each thread works with its own browser.
+ * <p>
  * Concept: {@code parallel} in testng.xml or Surefire runs
  * {@code methods}, {@code classes}, {@code tests} or {@code instances} on
  * {@code thread-count} threads; this project uses {@code classes}. On one

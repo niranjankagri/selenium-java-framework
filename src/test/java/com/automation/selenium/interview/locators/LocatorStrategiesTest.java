@@ -27,6 +27,13 @@ import com.automation.selenium.utils.Steps;
  * Interview question: Which locator strategies does Selenium support, and
  * which do you prefer?
  * <p>
+ * Interview answer: Selenium has eight strategies: id, name, className,
+ * tagName, linkText, partialLinkText, cssSelector and xpath. I prefer a
+ * unique, stable attribute such as id, name or a data-test attribute, then a
+ * short CSS selector, and use XPath when I need the visible text or have to
+ * move to a parent or sibling. I avoid absolute paths, which break with
+ * every layout change.
+ * <p>
  * Concept: Selenium finds elements with eight {@link By} strategies: id,
  * name, className, tagName, linkText, partialLinkText, cssSelector and xpath.
  * Selenium 4 adds relative locators that find an element by its position

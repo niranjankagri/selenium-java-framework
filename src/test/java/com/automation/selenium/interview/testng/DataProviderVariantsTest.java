@@ -25,6 +25,11 @@ import com.automation.selenium.utils.Steps;
 /**
  * Interview question: What forms can a {@code @DataProvider} take?
  * <p>
+ * Interview answer: Besides Object[][], a data provider can return a lazy
+ * Iterator<Object[]>, take the calling Method to serve several tests, or run
+ * its rows in parallel with parallel = true, in which case the test must be
+ * thread-safe.
+ * <p>
  * Concept: the basic form returns {@code Object[][]}, one inner array per
  * test run (see {@code TestData.invalidCredentials} with {@code LoginTest}).
  * Other forms:
