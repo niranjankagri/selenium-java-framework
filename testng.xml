@@ -20,9 +20,12 @@
 				<exclude name="demo" />
 			</run>
 		</groups>
-		<!-- Run every test class in this package -->
+		<!-- Run every test class in these packages -->
 		<packages>
+			<!-- Application tests on OrangeHRM -->
 			<package name="com.automation.selenium.tests" />
+			<!-- Interview examples, one sub-package per topic (".*" includes the sub-packages) -->
+			<package name="com.automation.selenium.interview.*" />
 		</packages>
 	</test>
 </suite>

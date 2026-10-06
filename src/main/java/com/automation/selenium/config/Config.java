@@ -89,6 +89,17 @@ public final class Config {
 	}
 
 	/**
+	 * The address of the practice site used by the interview examples that
+	 * OrangeHRM cannot show (alerts, frames, native drop-downs, cookies, ...).
+	 *
+	 * @return String the practice site URL without a trailing slash.
+	 */
+	public String practiceUrl() {
+		// Same trimming as baseUrl(), so paths can be appended as "/login"
+		return value("practiceUrl").replaceAll("/+$", "");
+	}
+
+	/**
 	 * The browser to start.
 	 *
 	 * @return String chrome, firefox or edge.
