@@ -334,7 +334,7 @@ A normal run has **108 tests**: 17 application tests, 17 interview scenarios on 
 | `mvn clean test -Pdemo -Dheadless=true` | 112 | 107 | 2 on purpose + 1 (practice-site frame error) | 2 on purpose | 12 min 50 s |
 | `mvn clean test -Dgroups=testng` | 24 | 24 | 0 | 0 | about 2 s |
 
-Latest runs: 6 Oct 2026, headless Chrome, JDK 27, 3 threads. Both web sites are public and shared, so an occasional failure comes from the site (an error page, a module switched off by another user); the report's screenshot shows which. `SeleniumScenariosTest.adminCanLogInWithTheKeyboard` is currently flaky against OrangeHRM (the password sometimes lands in the user name field); the cause is still open.
+Latest runs: 6 Oct 2026, headless Chrome, JDK 27, 3 threads. Both web sites are public and shared, so an occasional failure comes from the site (an error page, a module switched off by another user); the report's screenshot shows which. `SeleniumScenariosTest.adminCanLogInWithTheKeyboard` failed in some full parallel runs (the password landed in the user name field) but never in 27 isolated attempts; `LoginPage.loginWithKeyboard` now checks both fields before pressing Enter and names what each one holds if this happens again.
 
 **Demo tests.** `ReportDemoTest` shows how the framework and the report handle every outcome, not just passes:
 

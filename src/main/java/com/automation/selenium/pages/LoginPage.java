@@ -166,10 +166,21 @@ public class LoginPage extends BasePage {
 				.sendKeys(Keys.TAB)
 				// Type the password there
 				.sendKeys(password)
-				// Enter submits the form, like pressing Login
-				.sendKeys(Keys.ENTER)
 				// Send the whole chain to the browser
 				.perform();
+		// Check where the keys landed before submitting. Keyboard input goes wherever the focus is, so if the
+		// focus moved while the keys were sent, the text ends up in the wrong field; fail here with exactly
+		// what each field holds, instead of with a vague timeout on the dashboard later.
+		// (Seen in full parallel runs on 6 Oct 2026: the password landed in the user name field.)
+		String typedUsername = usernameField.getDomProperty("value");
+		String typedPassword = passwordField.getDomProperty("value");
+		if (!username.equals(typedUsername) || !password.equals(typedPassword)) {
+			// The password is never shown, only its length
+			throw new IllegalStateException("Keyboard login typed into the wrong fields: the user name field holds \""
+					+ typedUsername + "\", the password field holds " + typedPassword.length() + " characters");
+		}
+		// Both fields are right: Enter submits the form, like pressing Login
+		new Actions(driver).sendKeys(Keys.ENTER).perform();
 		// Login done: create the dashboard page object
 		DashboardPage dashboard = new DashboardPage(driver);
 		// Wait until it is loaded
