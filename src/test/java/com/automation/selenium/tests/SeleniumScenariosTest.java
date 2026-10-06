@@ -52,8 +52,9 @@ import com.automation.selenium.utils.Steps;
 @Test(groups = "interview")
 public class SeleniumScenariosTest extends BaseTest {
 
-	// Modules the Admin user always has in the side menu (the full list may grow)
-	private static final List<String> CORE_MODULES = List.of("Admin", "PIM", "Leave", "Time", "Dashboard");
+	// Modules the Admin user always has in the side menu (the full list may grow).
+	// "Leave" is not in the list: on the shared demo site other users can switch modules off, and it disappeared on 6 Oct 2026.
+	private static final List<String> CORE_MODULES = List.of("Admin", "PIM", "Time", "Dashboard");
 	// Options of the User Role filter, in display order
 	private static final List<String> ROLE_OPTIONS = List.of("-- Select --", "Admin", "ESS");
 	// Every PNG file starts with these four bytes (0x89 needs a cast: Java bytes are signed, -128..127)
