@@ -6,7 +6,7 @@ This repository is intentionally designed as an **Interview Automation Lab**, no
 
 The goal is simple:
 
-> **Interview Question → Interview Answer → Concept → Working Code → Common Trap → Recommended Approach**
+**Interview Question → Interview Answer → Concept → Working Code → Common Trap → Recommended Approach**
 
 Each topic is implemented with working Java/Selenium/TestNG code so that the repository can be used both as an interview preparation reference and as a practical coding example.
 
@@ -17,6 +17,8 @@ Each topic is implemented with working Java/Selenium/TestNG code so that the rep
 ---
 
 ## Project Overview
+
+> This is an interview-focused Selenium Java automation laboratory demonstrating commonly asked Selenium WebDriver, Java and TestNG concepts through executable implementations.
 
 This repository demonstrates commonly asked concepts in:
 
@@ -453,54 +455,27 @@ For interview preparation, the interviewer should be able to immediately see the
 
 # PageFactory and @CacheLookup
 
-Every page object in `pages/` uses PageFactory for its fixed elements, and it is a commonly discussed Selenium interview topic.
-
-Example:
-
-```java
-@FindBy(name = "username")
-private WebElement usernameField;
-```
-
-and:
-
-```java
-PageFactory.initElements(driver, this);
-```
-
 PageFactory creates Selenium element proxies for fields declared with `@FindBy`.
 
-The underlying element lookup occurs each time the field is used, rather than once when the page object is created. After a re-render, the next use finds the new element; a use that happens while the element is being replaced can still throw `StaleElementReferenceException`, which is why the explicit waits in `BasePage` ignore that exception and retry.
+The underlying element lookup can be deferred until the field is used, but PageFactory does **not** eliminate `StaleElementReferenceException`.
 
-### Important interview point
-
-PageFactory does **not** eliminate stale-element problems.
-
-The DOM element can still become stale after:
+The underlying DOM element can still become stale after:
 
 * Page refresh
 * Navigation
+* AJAX updates
 * DOM replacement
-* AJAX re-rendering
-* React/Vue/Angular updates
+* React/Vue/Angular re-rendering
 
 ### @CacheLookup
 
-`@CacheLookup` caches the located element reference.
+`@CacheLookup` caches the located `WebElement` reference.
 
-It may improve performance for genuinely static elements, but it can cause stale-element problems when the DOM changes.
+It can improve performance for genuinely static elements, but it can increase the risk of stale-element problems when the DOM changes.
 
-This repository intentionally demonstrates:
+This repository intentionally demonstrates the difference between `@FindBy` and `@CacheLookup` after a page reload.
 
-```text
-@FindBy
-vs
-@FindBy + @CacheLookup
-```
-
-so that the difference can be explained during an interview ([`SeleniumScenariosTest.findByFieldSurvivesAReloadButCacheLookupGoesStale`](src/test/java/com/automation/selenium/tests/SeleniumScenariosTest.java)).
-
-### Interview answer
+### Interview Answer
 
 > PageFactory provides element proxies and can defer element lookup, but it does not eliminate stale-element exceptions. I avoid `@CacheLookup` for dynamic applications unless I know the DOM reference remains stable.
 
@@ -526,15 +501,27 @@ Thread.sleep(5000);
 wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 ```
 
-### PageFactory
+### PageFactory Does Not Mean "No Stale Elements"
 
 **Wrong assumption:**
 
 > PageFactory means elements can never become stale.
 
-**Correct:**
+**Correct explanation:**
 
-PageFactory does not eliminate stale elements. `@CacheLookup` can make stale-element problems more likely on dynamic pages.
+PageFactory provides element proxies, but the underlying DOM element can still become stale after:
+
+* Page refresh
+* Navigation
+* DOM replacement
+* AJAX updates
+* React/Vue/Angular re-rendering
+
+`@CacheLookup` is particularly important because it caches the element reference and can therefore increase the risk of stale-element problems on dynamic pages.
+
+**Interview answer:**
+
+> PageFactory can defer element lookup through proxies, but it does not eliminate stale-element exceptions. I avoid `@CacheLookup` for dynamic applications unless I know the element reference remains stable.
 
 ### ThreadLocal
 
@@ -592,68 +579,61 @@ because `.//td` searches relative to the current row.
 
 # Java Interview Coding
 
-The repository also contains a focused set of Java coding problems commonly asked in SDET and automation interviews, as TestNG tests in [`src/test/java/com/automation/selenium/interview/java/`](src/test/java/com/automation/selenium/interview/java):
+The repository also covers commonly asked Java coding problems for SDET and QA Automation interviews.
 
-```text
-ReverseStringTest.java
-PalindromeTest.java
-CharacterFrequencyTest.java
-DuplicateCharactersTest.java
-FirstNonRepeatingCharacterTest.java
-AnagramTest.java
-ReverseWordsTest.java
-CountWordsTest.java
-RemoveDuplicateCharactersTest.java
-FindDuplicateElementsTest.java
-SecondHighestNumberTest.java
-FindMissingNumberTest.java
-FindMaxMinTest.java
-SortArrayTest.java
-FibonacciTest.java
-PrimeNumberTest.java
-SwapNumbersTest.java
-ArrayIntersectionTest.java
-RemoveDuplicatesFromListTest.java
-StreamFrequencyTest.java
-```
+### String Problems
 
-Each Java coding example contains:
+* Reverse String
+* Palindrome
+* Character Frequency
+* Duplicate Characters
+* First Non-Repeating Character
+* Anagram
+* Reverse Words
+* Count Words
+* Remove Duplicate Characters
 
-```java
-/**
- * Interview question:
- * ...
- *
- * Interview answer:
- * ...
- *
- * Concept:
- * ...
- *
- * Recommended approach:
- * ...
- */
-```
+### Array / Collection Problems
 
-followed by the solution, tests for its edge cases (empty input, negatives, overflow, …) and, where one exists, a check against the library way of doing it.
+* Find Duplicate Elements
+* Find Second Highest Number
+* Find Missing Number
+* Find Maximum / Minimum
+* Sort an Array
+* Array Intersection
+* Remove Duplicates from List
 
-The focus is on commonly expected SDET skills:
+### Basic Algorithm Problems
+
+* Fibonacci
+* Prime Number
+* Swap Numbers
+
+### Java Streams / Collections
+
+* Frequency counting using `Map`
+* Duplicate detection using `Set`
+* Collection filtering
+* Sorting using Streams
+* Grouping and counting
+
+The Java examples focus on practical interview skills:
 
 * Strings
 * Arrays
 * Lists
 * Sets
 * Maps
-* Loops
 * Collections
+* Loops
 * Java Streams
 * Basic algorithms
 
-Run them on their own (no browser, about 2 seconds):
+Each example follows:
 
-```bash
-mvn clean test -Dgroups=java
-```
+**Interview Question → Interview Answer → Concept → Implementation → Recommended Approach**
+
+The 20 classes are in [`src/test/java/com/automation/selenium/interview/java/`](src/test/java/com/automation/selenium/interview/java) (40 tests); run them on their own with `mvn clean test -Dgroups=java` (no browser, about 2 seconds).
 
 ---
 
@@ -728,15 +708,17 @@ The repository demonstrates:
 
 ## Normal Interview Suite
 
-The normal suite is designed to remain green.
+The normal interview suite is designed to remain completely green.
 
 | Run          | Tests | Passed | Failed | Skipped |
 | ------------ | ----: | -----: | -----: | ------: |
-| Normal suite |   148 |    144 |      4 |       0 |
+| Normal suite |   148 |    145 |      3 |       0 |
 
-**Latest normal run (6 Oct 2026, headless Chrome, 14 min 06 s): 144 of 148 passed.** The 4 failures were all on the practice site, which answered with Heroku's "Application error" page on all three attempts (each reload is listed in the report); all 40 Java coding tests, all TestNG examples and all OrangeHRM tests passed. Because the suite runs against two public sites, an occasional failure like this comes from the site, and the report's screenshot shows which.
+**Latest normal run (6 Oct 2026, headless Chrome, 15 min 29 s): 145/148 passed.**
 
-The normal suite is made of 17 OrangeHRM application tests, 17 interview scenarios on OrangeHRM, 74 runs of the `interview/` Selenium, TestNG and framework examples, and 40 Java coding tests. Most of the run time is spent waiting for the two public sites; `-Dgroups=java` and `-Dgroups=testng` run in seconds.
+The suite runs against two shared public demo sites, so a run can show a few failures caused by the sites rather than by the code. In this run all 3 were timing problems on those sites: OrangeHRM's loading overlay still covered the Add Employee form's Save button, an OrangeHRM employee search did not load in time, and the practice site's infinite-scroll page did not add content. Each failure has a screenshot in the report showing what the site displayed. All 40 Java coding tests and all TestNG and framework examples passed.
+
+The normal suite is made of 17 OrangeHRM application tests, 17 interview scenarios on OrangeHRM, 74 runs of the `interview/` Selenium, TestNG and framework examples, and 40 Java coding tests. `-Dgroups=java` and `-Dgroups=testng` run in seconds and do not depend on any website.
 
 Run:
 
@@ -744,24 +726,22 @@ Run:
 mvn clean test -Dheadless=true
 ```
 
----
-
 ## Demo Outcome Suite
 
-The repository also contains a dedicated `demo` group that intentionally demonstrates different TestNG outcomes.
+A separate `demo` group intentionally demonstrates different TestNG outcomes.
 
 | Run        | Tests | Passed |        Failed |       Skipped |
 | ---------- | ----: | -----: | ------------: | ------------: |
 | Demo suite |   152 | the 148 of the normal suite | 2 intentional | 2 intentional |
 
-The failed and skipped tests are deliberate demonstrations of:
+The failed and skipped tests are intentional demonstrations of TestNG failure and skip behavior:
 
 * Assertion failure
 * Runtime failure
 * `SkipException`
 * Dependency-based skip
 
-They are **not defects in the normal test suite**.
+They are **not defects in the normal interview suite**.
 
 Run:
 
@@ -942,13 +922,19 @@ This makes the examples more representative of real automation engineering pract
 
 ---
 
-# What This Repository Intentionally Does NOT Cover
+# Repository Scope
 
-This repository focuses specifically on:
+This repository intentionally focuses on:
 
-**Selenium + Java + TestNG + UI automation interview preparation.**
+* Selenium WebDriver
+* Java
+* TestNG
+* UI automation
+* Selenium interview preparation
+* SDET interview preparation
+* Automation framework concepts
 
-The following areas are intentionally reserved for a separate production-style QA portfolio project:
+The following are intentionally outside the scope of this repository and will be demonstrated separately in a production-style QA portfolio project:
 
 * REST API automation
 * Playwright
@@ -957,18 +943,14 @@ The following areas are intentionally reserved for a separate production-style Q
 * Performance testing
 * Docker
 * Selenium Grid
-* Cloud test execution
-* CI/CD pipelines
-* GitHub Actions
-* Jenkins
+* CI/CD
+* Cloud execution
 * AWS
 * Kubernetes
 * SonarQube
-* Enterprise quality gates
-* Advanced infrastructure
-* Large-scale test orchestration
+* Enterprise infrastructure
 
-This separation keeps the current repository focused rather than turning it into an unnecessarily large collection of unrelated technologies.
+The goal of this repository is **depth in Selenium, Java and TestNG interview concepts**, rather than collecting every QA technology in one project.
 
 ---
 
