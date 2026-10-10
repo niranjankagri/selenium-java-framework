@@ -1,0 +1,50 @@
+# Runs a stable subset of the lab on every push and pull request to main, and on demand:
+#   - group "java":  the 40 Java coding examples (no browser, fully deterministic)
+#   - group "smoke": the OrangeHRM smoke tests in headless Chrome
+# The full suite (148 tests) depends on two public practice sites and is meant to be run
+# locally (see the README); it is not run here so a red badge always means a real problem.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allows a manual run from the Actions tab
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the run that is still going.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Java examples + smoke (headless Chrome, JDK 17)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven # reuses downloaded dependencies between runs (keyed on pom.xml)
+
+      # Chrome is preinstalled on ubuntu-latest; Selenium Manager fetches the matching driver.
+      - name: Run the java and smoke groups
+        run: mvn -B clean test -Dgroups=java,smoke -Dheadless=true
+
+      # Kept even when tests fail, so failures can be analysed
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-report
+          path: target/surefire-reports/selenium-test-report.html
+          if-no-files-found: ignore

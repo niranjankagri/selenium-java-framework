@@ -1,5 +1,7 @@
 # Selenium Java Interview Automation Lab
 
+[![Tests](https://github.com/niranjankagri/selenium-java-framework/actions/workflows/tests.yml/badge.svg)](https://github.com/niranjankagri/selenium-java-framework/actions/workflows/tests.yml)
+
 A hands-on **Selenium WebDriver + Java + TestNG interview preparation repository** containing commonly asked QA automation interview questions with executable, commented Java implementations.
 
 This repository is intentionally designed as an **Interview Automation Lab**, not as a production enterprise automation framework.
@@ -763,6 +765,14 @@ mvn clean test -Pdemo
 
 ```bash
 mvn clean test
+```
+
+## Continuous integration
+
+GitHub Actions (`.github/workflows/tests.yml`) runs a stable subset on every push and pull request: the 40 Java coding examples (`java` group, no browser) and the OrangeHRM `smoke` tests in headless Chrome, 44 tests. The full suite depends on two public practice sites, so it is run locally. The same subset locally:
+
+```bash
+mvn clean test -Dgroups=java,smoke -Dheadless=true
 ```
 
 ## Headless execution
