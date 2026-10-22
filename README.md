@@ -775,6 +775,8 @@ GitHub Actions (`.github/workflows/tests.yml`) runs a stable subset on every pus
 mvn clean test -Dgroups=java,smoke -Dheadless=true
 ```
 
+`main` is protected by a ruleset: every change goes through a pull request, and this CI job must pass before it is merged.
+
 ## Headless execution
 
 ```bash
