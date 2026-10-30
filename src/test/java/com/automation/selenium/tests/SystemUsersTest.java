@@ -33,8 +33,8 @@ public class SystemUsersTest extends BaseTest {
 	 * Opens Admin from the side menu and checks the title and that users are listed.
 	 */
 	// groups = "smoke" is added to the class group, so this test is in both "admin" and "smoke"
-	@Test(groups = "smoke", description = "System Users page opens from the Admin menu")
-	public void systemUsersPageOpensFromMenu() {
+	@Test(groups = "smoke", description = "[TC-111] System Users page opens from the Admin menu")
+	public void tc111_systemUsersPageOpensFromMenu() {
 		// Log in, then click Admin in the side menu
 		SystemUsersPage users = loginAsAdmin().openAdmin();
 
@@ -47,8 +47,8 @@ public class SystemUsersTest extends BaseTest {
 	/**
 	 * Searches for user name "Admin" and checks that every listed user is Admin.
 	 */
-	@Test(description = "Filtering by username lists only that user")
-	public void filterByUsername() {
+	@Test(description = "[TC-112] Filtering by username lists only that user")
+	public void tc112_filterByUsername() {
 		// Log in, open Admin, type "Admin" into the Username filter, press Search (methods are chained)
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByUsername("Admin").search();
 
@@ -63,8 +63,8 @@ public class SystemUsersTest extends BaseTest {
 	/**
 	 * Searches for enabled admins and checks the role and status of every listed user.
 	 */
-	@Test(description = "Filtering by role and status lists only matching users")
-	public void filterByRoleAndStatus() {
+	@Test(description = "[TC-113] Filtering by role and status lists only matching users")
+	public void tc113_filterByRoleAndStatus() {
 		// Choose User Role = Admin and Status = Enabled in the drop-downs, then Search
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByRole("Admin").filterByStatus("Enabled").search();
 
@@ -82,8 +82,8 @@ public class SystemUsersTest extends BaseTest {
 	/**
 	 * Searches for a user name that does not exist and checks the empty result.
 	 */
-	@Test(description = "Searching for an unknown username finds no records")
-	public void unknownUsernameFindsNoRecords() {
+	@Test(description = "[TC-114] Searching for an unknown username finds no records")
+	public void tc114_unknownUsernameFindsNoRecords() {
 		// Search for a name nobody has
 		SystemUsersPage users = loginAsAdmin().openAdmin().filterByUsername("no.such.user.42").search();
 
@@ -96,8 +96,8 @@ public class SystemUsersTest extends BaseTest {
 	/**
 	 * Sets all three filters, presses Reset and checks that every filter is empty again.
 	 */
-	@Test(description = "Reset clears every filter")
-	public void resetClearsFilters() {
+	@Test(description = "[TC-115] Reset clears every filter")
+	public void tc115_resetClearsFilters() {
 		// Fill all three filters, then press Reset (no search needed)
 		SystemUsersPage users = loginAsAdmin().openAdmin()
 				.filterByUsername("Admin").filterByRole("Admin").filterByStatus("Enabled")

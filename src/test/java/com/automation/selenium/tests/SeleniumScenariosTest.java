@@ -68,8 +68,8 @@ public class SeleniumScenariosTest extends BaseTest {
 	 * uses containsAll, not equals, so a new module on the demo site does not
 	 * break the test.
 	 */
-	@Test(description = "Scenario: read a list of elements (the side menu)")
-	public void sideMenuListsTheCoreModules() {
+	@Test(description = "[TC-116] Scenario: read a list of elements (the side menu)")
+	public void tc116_sideMenuListsTheCoreModules() {
 		// Log in and read the text of every side menu link
 		List<String> items = loginAsAdmin().menuItems();
 		// Show the full list in the report
@@ -88,8 +88,8 @@ public class SeleniumScenariosTest extends BaseTest {
 	 * redirects it to the login page; a 200 after that redirect still proves
 	 * the link leads somewhere.
 	 */
-	@Test(description = "Scenario: find broken links (the side menu)")
-	public void sideMenuHasNoBrokenLinks() {
+	@Test(description = "[TC-117] Scenario: find broken links (the side menu)")
+	public void tc117_sideMenuHasNoBrokenLinks() {
 		// Log in and read the href of every side menu link
 		List<String> links = loginAsAdmin().menuLinks();
 		// Guard: an empty list would make the loop below pass without checking anything
@@ -117,8 +117,8 @@ public class SeleniumScenariosTest extends BaseTest {
 	 * Select class cannot read them. The page opens the list, reads every
 	 * option and closes it again.
 	 */
-	@Test(description = "Scenario: read the options of a custom drop-down")
-	public void userRoleDropdownOffersAdminAndEss() {
+	@Test(description = "[TC-118] Scenario: read the options of a custom drop-down")
+	public void tc118_userRoleDropdownOffersAdminAndEss() {
 		// Log in, open Admin, read all options of the User Role drop-down
 		List<String> options = loginAsAdmin().openAdmin().roleOptions();
 		// Show them in the report
@@ -132,8 +132,8 @@ public class SeleniumScenariosTest extends BaseTest {
 	 * Actions class: logs in with keyboard events only (type, Tab, type,
 	 * Enter), the way a keyboard user would, instead of clicking the button.
 	 */
-	@Test(description = "Scenario: keyboard actions with the Actions class (Tab and Enter)")
-	public void adminCanLogInWithTheKeyboard() {
+	@Test(description = "[TC-119] Scenario: keyboard actions with the Actions class (Tab and Enter)")
+	public void tc119_adminCanLogInWithTheKeyboard() {
 		// Open the login page and log in using only key presses
 		DashboardPage dashboard = openLoginPage().loginWithKeyboard(Config.get().username(), Config.get().password());
 
@@ -147,8 +147,8 @@ public class SeleniumScenariosTest extends BaseTest {
 	 * share the session cookie, so the new tab is logged in without a second
 	 * login.
 	 */
-	@Test(description = "Scenario: open a new tab and switch between windows")
-	public void dashboardOpensInASecondTab() {
+	@Test(description = "[TC-120] Scenario: open a new tab and switch between windows")
+	public void tc120_dashboardOpensInASecondTab() {
 		// Log in in the first tab
 		loginAsAdmin();
 		// A handle is the ID of a window/tab; keep the first one to come back to it

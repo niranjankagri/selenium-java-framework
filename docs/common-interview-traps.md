@@ -70,7 +70,7 @@ Paths: `interview/` = [`src/test/java/com/automation/selenium/interview/`](../sr
 ### Can `Select` handle every drop-down? 🟢 ⭐
 
 **Answer:** Only real `<select>` elements. Most modern drop-downs are `div`s: click to open them, then click the option by its text. `Select` throws `UnexpectedTagNameException` on anything else, and refuses a disabled option with `UnsupportedOperationException`.
-**In the lab:** `interview/dropdowns/SelectDropdownTest` (native); `BasePage.choose` and `SeleniumScenariosTest.userRoleDropdownOffersAdminAndEss` (custom).
+**In the lab:** `interview/dropdowns/SelectDropdownTest` (native); `BasePage.choose` and `SeleniumScenariosTest.tc118_userRoleDropdownOffersAdminAndEss` (custom).
 
 ### `clear()` didn't empty the field. Is Selenium broken? 🟡
 
@@ -161,12 +161,12 @@ Paths: `interview/` = [`src/test/java/com/automation/selenium/interview/`](../sr
 ### Can I rely on `priority` to run tests in order across the suite? 🟡
 
 **Answer:** No. `priority` only sorts the methods TestNG schedules together (lower first); it is not a dependency. With parallel runs (here `parallel=classes`, each class on its own thread) there is no dependable order between classes. Tests that need an order should use dependencies, or better, not need one.
-**In the lab:** `TestNgFeaturesTest.loginPageIsShown` → `adminLogsInAfterThePageCheck`.
+**In the lab:** `TestNgFeaturesTest.tc121_loginPageIsShown` → `tc101_adminLogsInAfterThePageCheck`.
 
 ### I used `SoftAssert` and the failures vanished. Why? 🟢 ⭐
 
 **Answer:** `assertAll()` was not called. Soft assertions only *collect* failures; `assertAll()` at the end reports them and fails the test.
-**In the lab:** `TestNgFeaturesTest.softAssertChecksTheLoginPage`.
+**In the lab:** `TestNgFeaturesTest.tc121_softAssertChecksTheLoginPage`.
 
 ### My `@BeforeMethod` didn't run when I filtered by group. Why? 🟡 ⭐
 
@@ -186,7 +186,7 @@ Paths: `interview/` = [`src/test/java/com/automation/selenium/interview/`](../sr
 ### Should a `RetryAnalyzer` retry every failure? 🔴 ⭐
 
 **Answer:** No. Retry only failures you know come from the environment (a short outage). Retrying everything hides real defects and makes flaky tests look green.
-**In the lab:** `base/RetryOnce` on one test only (`TestNgFeaturesTest.adminLoginIsRetriedOnceOnFailure`). The practice site's known hiccups are handled where they happen (`PracticeSiteTest.open`), and each reload is written to the report.
+**In the lab:** `base/RetryOnce` on one test only (`TestNgFeaturesTest.tc101_adminLoginIsRetriedOnceOnFailure`). The practice site's known hiccups are handled where they happen (`PracticeSiteTest.open`), and each reload is written to the report.
 
 ### A parallel data provider, and my test fails randomly. Why? 🔴
 

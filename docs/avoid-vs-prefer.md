@@ -423,7 +423,7 @@ soft.assertAll();                                     // reports every failure, 
 ```
 
 **Why:** soft assertions only collect; `assertAll()` is what fails the test.
-**In the lab:** `TestNgFeaturesTest.softAssertChecksTheLoginPage`.
+**In the lab:** `TestNgFeaturesTest.tc121_softAssertChecksTheLoginPage`.
 
 ### Configuration methods under a group filter 🟡 ⭐
 
@@ -459,7 +459,7 @@ public void startBrowser() { ... }
 ```
 
 **Why:** `priority` only sorts the methods TestNG schedules together; with `parallel=classes` each class runs on its own thread, so there is no dependable order between classes. Independent tests can run anywhere, in any order.
-**In the lab:** `EmployeeTest.employeeCanBeAddedFoundAndDeleted` (add, find and delete in one test).
+**In the lab:** `EmployeeTest.tc108_employeeCanBeAddedFoundAndDeleted` (add, find and delete in one test).
 
 ### Retrying every failure 🔴 ⭐
 
@@ -476,7 +476,7 @@ public void adminLoginIsRetriedOnceOnFailure() { ... }
 ```
 
 **Why:** blanket retries hide real defects and flaky tests; a targeted retry, visible in the report, does not.
-**In the lab:** [`RetryOnce`](../src/test/java/com/automation/selenium/base/RetryOnce.java), `TestNgFeaturesTest.adminLoginIsRetriedOnceOnFailure`; the practice site's known hiccups are handled (and logged) in `PracticeSiteTest.open`.
+**In the lab:** [`RetryOnce`](../src/test/java/com/automation/selenium/base/RetryOnce.java), `TestNgFeaturesTest.tc101_adminLoginIsRetriedOnceOnFailure`; the practice site's known hiccups are handled (and logged) in `PracticeSiteTest.open`.
 
 ### Shared state in a parallel data provider 🔴
 

@@ -100,6 +100,8 @@ Used for:
 
 OrangeHRM is used where a realistic application flow makes the interview concept easier to demonstrate.
 
+**Test cases:** every OrangeHRM test starts with its case ID (`tc108_employeeCanBeAddedFoundAndDeleted`, description `[TC-108] ...`). The 22 cases (TC-101 to TC-122) are written out for a manual run in [docs/manual-test-cases.md](docs/manual-test-cases.md); the `interview/` technique lessons and Java exercises have no case IDs.
+
 ## 2. The Internet
 
 **Purpose:** Focused Selenium WebDriver exercises ([the-internet.herokuapp.com](https://the-internet.herokuapp.com)).

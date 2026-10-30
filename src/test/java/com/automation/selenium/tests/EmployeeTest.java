@@ -44,8 +44,8 @@ public class EmployeeTest extends BaseTest {
 	 * employee by ID in the list, deletes it and checks it is gone.
 	 */
 	// Also in the "smoke" group, besides the class group "pim"
-	@Test(groups = "smoke", description = "An employee can be added, found by ID and deleted")
-	public void employeeCanBeAddedFoundAndDeleted() {
+	@Test(groups = "smoke", description = "[TC-108] An employee can be added, found by ID and deleted")
+	public void tc108_employeeCanBeAddedFoundAndDeleted() {
 		// A new employee with a random 10-character ID, e.g. QA01234567
 		Employee employee = TestData.newEmployee();
 		// Set before saving: a failure right after Save may still have created the employee
@@ -82,8 +82,8 @@ public class EmployeeTest extends BaseTest {
 	 * Saves the Add Employee form without names and checks "Required" under
 	 * first and last name. Nothing is saved, so there is nothing to clean up.
 	 */
-	@Test(description = "First and last name are required for a new employee")
-	public void firstAndLastNameAreRequired() {
+	@Test(description = "[TC-109] First and last name are required for a new employee")
+	public void tc109_firstAndLastNameAreRequired() {
 		// Open the empty form and press Save without typing anything
 		AddEmployeePage form = loginAsAdmin().openPim().addEmployee().trySave();
 
@@ -94,8 +94,8 @@ public class EmployeeTest extends BaseTest {
 	/**
 	 * Searches for an employee ID that does not exist and checks the empty result.
 	 */
-	@Test(description = "Searching for an unknown employee ID finds no records")
-	public void unknownEmployeeIdFindsNoRecords() {
+	@Test(description = "[TC-110] Searching for an unknown employee ID finds no records")
+	public void tc110_unknownEmployeeIdFindsNoRecords() {
 		// Search for an ID nobody has
 		EmployeeListPage list = loginAsAdmin().openPim().searchById("NO-SUCH-ID");
 
