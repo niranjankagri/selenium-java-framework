@@ -31,8 +31,8 @@ public class LoginTest extends BaseTest {
 	 * the user name in the top bar and at least one widget.
 	 */
 	// Also in the "smoke" group (the quick check: -Dgroups=smoke)
-	@Test(groups = "smoke", description = "Admin can log in and sees the dashboard")
-	public void adminCanLogIn() {
+	@Test(groups = "smoke", description = "[TC-101] Admin can log in and sees the dashboard")
+	public void tc101_adminCanLogIn() {
 		// Open the login page, log in with the configured Admin user, wait for the dashboard
 		DashboardPage dashboard = loginAsAdmin();
 
@@ -55,8 +55,8 @@ public class LoginTest extends BaseTest {
 	// Data-driven: TestNG calls this method once per row of the provider (3 runs).
 	// dataProviderClass is needed because the provider lives in another class.
 	@Test(dataProvider = "invalidCredentials", dataProviderClass = TestData.class,
-			description = "Login is rejected for invalid credentials")
-	public void loginIsRejectedForInvalidCredentials(String caseName, String username, String password) {
+			description = "[TC-102] Login is rejected for invalid credentials")
+	public void tc102_loginIsRejectedForInvalidCredentials(String caseName, String username, String password) {
 		// Type the row's user name and password and press Login (submit does not expect success)
 		LoginPage login = openLoginPage().submit(username, password);
 
@@ -69,8 +69,8 @@ public class LoginTest extends BaseTest {
 	/**
 	 * Submits the empty form and checks "Required" under both fields.
 	 */
-	@Test(description = "Username and password are both required")
-	public void usernameAndPasswordAreRequired() {
+	@Test(description = "[TC-103] Username and password are both required")
+	public void tc103_usernameAndPasswordAreRequired() {
 		// Press Login with both fields empty
 		LoginPage login = openLoginPage().submit("", "");
 
@@ -82,8 +82,8 @@ public class LoginTest extends BaseTest {
 	/**
 	 * Submits only a user name and checks "Required" under the Password field.
 	 */
-	@Test(description = "Password is required when only the username is entered")
-	public void passwordIsRequired() {
+	@Test(description = "[TC-104] Password is required when only the username is entered")
+	public void tc104_passwordIsRequired() {
 		// User name filled in, password left empty
 		LoginPage login = openLoginPage().submit("Admin", "");
 
@@ -96,8 +96,8 @@ public class LoginTest extends BaseTest {
 	/**
 	 * Logs in, logs out through the user menu and checks the login page is shown.
 	 */
-	@Test(groups = "smoke", description = "Admin can log out and returns to the login page")
-	public void adminCanLogOut() {
+	@Test(groups = "smoke", description = "[TC-105] Admin can log out and returns to the login page")
+	public void tc105_adminCanLogOut() {
 		// Log in, then user menu (top right) → Logout
 		LoginPage login = loginAsAdmin().logout();
 
@@ -111,8 +111,8 @@ public class LoginTest extends BaseTest {
 	 * cache); the reload asks the server again, and with the session ended it
 	 * must answer with the login page.
 	 */
-	@Test(description = "Back and reload after logout end on the login page")
-	public void backAfterLogoutStaysLoggedOut() {
+	@Test(description = "[TC-106] Back and reload after logout end on the login page")
+	public void tc106_backAfterLogoutStaysLoggedOut() {
 		// Log in and out
 		LoginPage login = loginAsAdmin().logout();
 		// Make sure the logout itself worked before testing Back
@@ -132,8 +132,8 @@ public class LoginTest extends BaseTest {
 	 * Opens the dashboard URL in a browser that never logged in. OrangeHRM
 	 * must redirect to the login page instead of showing the dashboard.
 	 */
-	@Test(description = "The dashboard URL redirects to login when not logged in")
-	public void dashboardRequiresLogin() {
+	@Test(description = "[TC-107] The dashboard URL redirects to login when not logged in")
+	public void tc107_dashboardRequiresLogin() {
 		// Go straight to the dashboard URL (visit() does not wait for the dashboard)
 		new DashboardPage(driver()).visit();
 

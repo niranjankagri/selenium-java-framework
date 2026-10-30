@@ -44,8 +44,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 * mismatch together, instead of stopping at the first one. assertAll()
 	 * at the end is what fails the test; without it the failures are lost.
 	 */
-	@Test(description = "TestNG: SoftAssert checks the whole login page in one run")
-	public void softAssertChecksTheLoginPage() {
+	@Test(description = "[TC-121] TestNG: SoftAssert checks the whole login page in one run")
+	public void tc121_softAssertChecksTheLoginPage() {
 		// Open the login page
 		LoginPage login = openLoginPage();
 		// A new SoftAssert per test: it remembers every failed check
@@ -70,8 +70,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 */
 	// The test passes only if this exception type is thrown and its message matches the regex
 	@Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = ".*Invalid credentials.*",
-			description = "TestNG: expectedExceptions, a wrong password must stop with the login error")
-	public void wrongPasswordThrowsTheLoginError() {
+			description = "[TC-102] TestNG: expectedExceptions, a wrong password must stop with the login error")
+	public void tc102_wrongPasswordThrowsTheLoginError() {
 		// Right user, wrong password: loginAs throws "Login as "Admin" failed: Invalid credentials"
 		openLoginPage().loginAs(Config.get().username(), "wrong-password");
 	}
@@ -80,19 +80,19 @@ public class TestNgFeaturesTest extends BaseTest {
 	 * priority: the lower number runs first within this class (the default is
 	 * 0), so this check runs before the dependent test below.
 	 */
-	@Test(priority = 1, description = "TestNG: priority, the login page check runs first")
-	public void loginPageIsShown() {
+	@Test(priority = 1, description = "[TC-121] TestNG: priority, the login page check runs first")
+	public void tc121_loginPageIsShown() {
 		// Open the login page and check its form is there
 		assertTrue(openLoginPage().isDisplayed(), "The login form should be shown");
 	}
 
 	/**
-	 * dependsOnMethods: runs only if loginPageIsShown passed. Had it failed,
+	 * dependsOnMethods: runs only if tc121_loginPageIsShown passed. Had it failed,
 	 * TestNG would skip this test, not fail it (see ReportDemoTest).
 	 */
-	@Test(priority = 2, dependsOnMethods = "loginPageIsShown",
-			description = "TestNG: dependsOnMethods, log in only after the login page check passed")
-	public void adminLogsInAfterThePageCheck() {
+	@Test(priority = 2, dependsOnMethods = "tc121_loginPageIsShown",
+			description = "[TC-101] TestNG: dependsOnMethods, log in only after the login page check passed")
+	public void tc101_adminLogsInAfterThePageCheck() {
 		// Log in and check the dashboard
 		assertTrue(loginAsAdmin().isDisplayed(), "The dashboard should be shown");
 	}
@@ -102,8 +102,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 * browser, and reports each run. Useful to catch a check that only
 	 * sometimes passes.
 	 */
-	@Test(invocationCount = 2, description = "TestNG: invocationCount, a wrong password is rejected every time")
-	public void wrongPasswordIsRejectedEveryTime() {
+	@Test(invocationCount = 2, description = "[TC-102] TestNG: invocationCount, a wrong password is rejected every time")
+	public void tc102_wrongPasswordIsRejectedEveryTime() {
 		// Submit a wrong password (submit does not expect the login to work)
 		LoginPage login = openLoginPage().submit(Config.get().username(), "wrong-password");
 
@@ -118,8 +118,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 * browser that BaseTest started for this thread.
 	 */
 	// 60_000 ms = 60 s (the underscore is only a digit separator for readability)
-	@Test(timeOut = 60_000, description = "TestNG: timeOut, the login must finish within 60 seconds")
-	public void loginFinishesWithinOneMinute() {
+	@Test(timeOut = 60_000, description = "[TC-122] TestNG: timeOut, the login must finish within 60 seconds")
+	public void tc122_loginFinishesWithinOneMinute() {
 		// Log in and check the dashboard, all within the time limit
 		assertTrue(loginAsAdmin().isDisplayed(), "The dashboard should be shown");
 	}
@@ -129,8 +129,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 * before it counts as failed, which covers a short outage of the demo
 	 * site. A passing run is never retried.
 	 */
-	@Test(retryAnalyzer = RetryOnce.class, description = "TestNG: retryAnalyzer, retried once if the demo site has a hiccup")
-	public void adminLoginIsRetriedOnceOnFailure() {
+	@Test(retryAnalyzer = RetryOnce.class, description = "[TC-101] TestNG: retryAnalyzer, retried once if the demo site has a hiccup")
+	public void tc101_adminLoginIsRetriedOnceOnFailure() {
 		// Log in and check the dashboard; on failure TestNG asks RetryOnce whether to run again
 		assertTrue(loginAsAdmin().isDisplayed(), "The dashboard should be shown");
 	}
@@ -144,8 +144,8 @@ public class TestNgFeaturesTest extends BaseTest {
 	 */
 	// Fill the method parameter from <parameter name="expectedTitle"> in testng.xml
 	@Parameters("expectedTitle")
-	@Test(description = "TestNG: Parameters from testng.xml, with an Optional default")
-	public void titleMatchesTheSuiteParameter(@Optional(TITLE) String expectedTitle) {
+	@Test(description = "[TC-121] TestNG: Parameters from testng.xml, with an Optional default")
+	public void tc121_titleMatchesTheSuiteParameter(@Optional(TITLE) String expectedTitle) {
 		// Open the login page
 		openLoginPage();
 		// Show in the report which value was used (from testng.xml or the default)
